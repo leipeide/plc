@@ -6,9 +6,7 @@ import java.util.List;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.waho.dao.NodeDao;
 import com.waho.domain.Device;
 import com.waho.domain.Node;
@@ -78,9 +76,9 @@ public class NodeDaoImpl implements NodeDao {
 	public int updateNodeStateAndPowerByNodeAddrAndDeviceid(Node node) throws Exception {
 		QueryRunner qr = new QueryRunner(C3P0Utils.getDataSource());
 		return qr.update(
-				"UPDATE nodes SET power=?,light1State=?,light1PowerPercent=?,light2State=?,light2PowerPercent=? WHERE nodeAddr=? and deviceid=?",
-				node.getPower(), node.isLight1State(), node.getLight1PowerPercent(), node.isLight2State(),
-				node.getLight2PowerPercent(), node.getNodeAddr(), node.getDeviceid());
+				"UPDATE nodes SET power=?,light1State=?,light1PowerPercent=?, getLight1Power=?,light2State=?,light2PowerPercent=?,getLight2Power=? WHERE nodeAddr=? and deviceid=?",
+				node.getPower(), node.isLight1State(), node.getLight1PowerPercent(), node.getLight1Power(), node.isLight2State(),
+				node.getLight2PowerPercent(), node.getLight2Power(), node.getNodeAddr(), node.getDeviceid());
 	}
 
 	@Override

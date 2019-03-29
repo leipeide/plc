@@ -4,7 +4,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath }/layui/css/layui.css">
 <script type="text/javascript"
@@ -43,9 +43,11 @@
 					<th>节点名称</th>
 					<th>主灯状态</th>
 					<th>主灯亮度</th>
+					<th>主灯功率</th>
 					<th>辅灯状态</th>
 					<th>辅灯亮度</th>
-					<th>节点功率</th>
+					<th>辅灯功率</th>
+					<th>总功率</th>
 					<th>单灯控制</th>
 					<th>更新数据</th>
 				</tr>
@@ -72,23 +74,32 @@
 				 -->
 			</tbody>
 		</table>
-    </form>
-	
-	<div class="pagination" style="text-align:center">
-			 <a href="${pageContext.request.contextPath  }/getNodesServlet?currentPage=${pb.currentPage==1?1:pb.currentPage-1}&deviceid=${deviceid}">
-			 	<button  class="layui-btn layui-btn-primary layui-btn-xs" >上一页</button> </a>&nbsp;
-			<c:if test="${pb.totalPage == '0'}">
+	</form>
+
+	<div class="pagination" style="text-align: center">
+		<a
+			href="${pageContext.request.contextPath  }/getNodesServlet?currentPage=${pb.currentPage==1?1:pb.currentPage-1}&deviceid=${deviceid}">
+			<button class="layui-btn layui-btn-primary layui-btn-xs">上一页</button>
+		</a>&nbsp;
+		<c:if test="${pb.totalPage == '0'}">
 			 	  第1页&nbsp;/&nbsp;共${pb.totalPage }页 
-			 	<a href="${pageContext.request.contextPath  }/getNodesServlet?currentPage=${(pb.currentPage==pb.totalPage)?pb.totalPage:pb.currentPage}&deviceid=${deviceid}">                                                        
-				<button  id ="pageBt" class="layui-btn layui-btn-primary layui-btn-xs"  lay-submit lay-filter="pageBt" onclick="nextPage(${pb.currentPage},${pb.totalPage})">下一页</button>       
-			</c:if>  
-			<c:if test="${pb.totalPage != '0'}">
+			 	<a
+				href="${pageContext.request.contextPath  }/getNodesServlet?currentPage=${(pb.currentPage==pb.totalPage)?pb.totalPage:pb.currentPage}&deviceid=${deviceid}">
+				<button id="pageBt" class="layui-btn layui-btn-primary layui-btn-xs"
+					lay-submit lay-filter="pageBt"
+					onclick="nextPage(${pb.currentPage},${pb.totalPage})">下一页</button>
+		</c:if>
+		<c:if test="${pb.totalPage != '0'}">
 			  	 第${pb.currentPage }页&nbsp;/&nbsp;共${pb.totalPage }页&nbsp;          
-				<a href="${pageContext.request.contextPath  }/getNodesServlet?currentPage=${(pb.currentPage==pb.totalPage)?pb.totalPage:pb.currentPage+1}&deviceid=${deviceid}">                                                        
-				<button  id ="pageBt" class="layui-btn layui-btn-primary layui-btn-xs"  lay-submit lay-filter="pageBt" onclick="nextPage(${pb.currentPage},${pb.totalPage})">下一页</button></a>
-			</c:if> 
-	</div> 
-	
+				<a
+				href="${pageContext.request.contextPath  }/getNodesServlet?currentPage=${(pb.currentPage==pb.totalPage)?pb.totalPage:pb.currentPage+1}&deviceid=${deviceid}">
+				<button id="pageBt" class="layui-btn layui-btn-primary layui-btn-xs"
+					lay-submit lay-filter="pageBt"
+					onclick="nextPage(${pb.currentPage},${pb.totalPage})">下一页</button>
+			</a>
+		</c:if>
+	</div>
+
 	<script type="text/javascript"
 		src="${pageContext.request.contextPath }/admin/js/nodes.js"></script>
 	<script>
@@ -106,7 +117,7 @@
 			  });
 		});	
 	</script>
-	
+
 	<script type="text/javascript">
 	function getXMLHttpRequest() {
 		var xmlhttp;
@@ -144,6 +155,7 @@
 							}
 							inner = inner + "</td>\
 							<td>" + node.light1PowerPercent + "</td>\
+							<td>" + node.light1Power + "</td>\
 							<td>";
 							if (node.light2State == true) {
 								inner = inner + "开";
@@ -152,6 +164,7 @@
 							}
 							inner = inner + "</td>\
 							<td>" + node.light2PowerPercent + "</td>\
+							<td>" + node.light2Power + "</td>\
 							<td>" + node.power + " W</td>\
 							<td><a href='javascript:;' onclick=\"nodeControl('/plc/nodeFormServlet', " + node.id 
 

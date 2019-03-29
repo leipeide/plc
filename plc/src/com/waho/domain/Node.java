@@ -35,6 +35,14 @@ public class Node {
 	 */
 	private int light2PowerPercent;
 	/**
+	 * 主灯功率
+	 */
+	private int light1Power;
+	/**
+	 * 辅灯功率
+	 */
+	private int light2Power;
+	/**
 	 * 总功率
 	 */
 	private int power;
@@ -133,19 +141,32 @@ public class Node {
 	public void setLight2PowerPercent(int light2PowerPercent) {
 		this.light2PowerPercent = light2PowerPercent;
 	}
+	public int getLight1Power() {
+		return light1Power;
+	}
+	public void setLight1Power(int light1Power) {
+		this.light1Power = light1Power;
+	}
+	public int getLight2Power() {
+		return light2Power;
+	}
+	public void setLight2Power(int light2Power) {
+		this.light2Power = light2Power;
+	}
 	public int getPower() {
 		return power;
 	}
 	public void setPower(int power) {
 		this.power = power;
 	}
+	
 	@Override
 	public String toString() {
 		return "Node [id=" + id + ", deviceid=" + deviceid + ", deviceMac=" + deviceMac + ", nodeAddr=" + nodeAddr
 				+ ", nodeName=" + nodeName + ", light1State=" + light1State + ", light2State=" + light2State
 				+ ", light1PowerPercent=" + light1PowerPercent + ", light2PowerPercent=" + light2PowerPercent
-				+ ", power=" + power + ", signal=" + signal + ", relayLevel=" + relayLevel + ", agreement=" + agreement
-				+ ", Phase=" + Phase + "]";
+				+ ", light1Power=" + light1Power + ", light2Power=" + light2Power + ", power=" + power + ", signal="
+				+ signal + ", relayLevel=" + relayLevel + ", agreement=" + agreement + ", Phase=" + Phase + "]";
 	}
 	
 }

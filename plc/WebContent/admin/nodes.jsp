@@ -11,25 +11,25 @@
 	src="${pageContext.request.contextPath }/layui/layui.js"></script>
 <title>Insert title here</title>
 <style>
-/*   .nav div{float:left;} */
+   .nav div{float:left;} 
   .pagination { width: 100%; position: relative; bottom: 0px;}
-/*   .div-serach{width:150px; height:50px} */
-/*   .div-submit{width:50px; height:50px} */
+  .div-serach{width:135px; height:50px} 
+  .div-submit{width:50px; height:50px} 
 </style> 
 </head>
 <body>
-	<form id="nodeform" class="layui-form" action="" method="post">
+	<form id="nodeform" class="layui-form" action="${pageContext.request.contextPath }/nodeSerachServlet?deivceid=${deviceid}" method="post">
 	<div class="nav">   
  		<div class="layui-btn-container">
   			<button id="addBt" class="layui-btn layui-btn-sm" lay-submit lay-filter="addBt">增加节点</button>
         	<button id="delBt" class="layui-btn layui-btn-sm" lay-submit lay-filter="delBt">删除节点</button>
    		</div>
-<!--    		<div class="div-serach"> -->
-<!--         	<input type="text" name="serach"  placeholder="请输入节点地址"  style="width:150px; height:30px"> -->
-<!--         </div> -->
-<!--         <div class="div-submit"> -->
-<!--          	<input type="submit" name="submit" value="搜索"  style="width:40px; height:30px"> -->
-<!--         </div> -->
+    		<div class="div-serach"> 
+         	<input type="text" name="serach"  placeholder="请输入节点地址" style="width:130px; height:30px" class="layui-input" >
+         </div> 
+         <div class="div-submit">
+          	<input type="submit" name="submit" value="搜索"  style="width:35px; height:28px">
+         </div>
      </div> 
        
 		<table class="layui-table">
@@ -51,9 +51,11 @@
 				</tr>
 			</thead>
 			<tbody id="table_body">
-				<!--<c:forEach items="${pb.nodes}" var="node">
+			<!--  
+			<c:forEach items="${pb.nodes}" var="node">
 					<tr>
-						<td>${node.nodeAddr }</td>
+						<td>${node.nodeAddr }&nbsp;&nbsp;<a href="${pageContext.request.contextPath }/nodeMessageChartServlet" ><i class="layui-icon layui-icon-chart"></i></a>
+						</td>
 						<td><a href="javascript:;"
 							onclick="reName('${pageContext.request.contextPath }/nodeRenameFormServlet',${node.id})">${node.nodeName }</a></td>
 						<td>${node.light1State == true ? "开" : "关" }</td>
@@ -66,7 +68,8 @@
 						<td><a href="javascript:;"
 							onclick="nodeRefresh('${pageContext.request.contextPath }/nodeRefreshServlet?nodeid=${node.id }')">刷新</a></td>
 					</tr>
-				</c:forEach>-->
+				</c:forEach>
+				 -->
 			</tbody>
 		</table>
     </form>
@@ -131,7 +134,7 @@
 					var node;
 					for (var i = 0; i < nodes.length; i++) {
 						node = nodes[i];
-						inner = inner + "<tr><td>" + node.nodeAddr + "</td>\
+						inner = inner + "<tr><td>" + node.nodeAddr + "&nbsp;&nbsp;<a href='/plc/nodeMessageChartServlet?nodeAddr=" + node.nodeAddr + "'><i class='layui-icon layui-icon-chart'></i></a></td>\
 						<td><a href='javascript:;'onclick=\"reName('/plc/nodeRenameFormServlet'," + node.id + ")\">" +node.nodeName +"</a></td>\
 							<td>";
 							if (node.light1State == true) {
@@ -170,6 +173,6 @@
 		AJAXRequest();
 	}
 	setInterval(AJAXRequest,1000*3);
-	</script>
+	</script> 
 </body>
 </html>

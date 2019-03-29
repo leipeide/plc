@@ -1,31 +1,3 @@
-/*
-function getXMLHttpRequest() {
-	var xmlhttp;
-	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-		xmlhttp = new XMLHttpRequest();
-	} else {// code for IE6, IE5
-		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	return xmlhttp;
-}
-
-function testAJAX() {
-	//1.创建请求
-	var req = getXMLHttpRequest();
-	//4.服务器处理
-	req.onreadystatechange = function() {
-		if (req.readyState == 4) {// 请求成功
-			if (req.status == 200) {// 服务器响应成功
-				alert(req.responseText);
-			}
-		}
-	}
-	//1.建立链接
-	req.open("get", "${pageContext.request.contextPath }/");
-	//2.发送请求
-	req.send(null);
-}*/
-
 /**
  * 左侧导航栏点击集控器名称
  * @param id

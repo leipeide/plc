@@ -140,5 +140,11 @@ public interface UserService {
 	 * @return
 	 */
 	public boolean updateUserPassword(int userid, String newPassword);
+	/**
+	 * 搜索节点功能
+	 * @param nodeAddr
+	 * @return
+	 */
+	public Node serachNode(String nodeAddr);
 	
 }

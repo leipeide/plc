@@ -9,9 +9,12 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
+import com.waho.dao.DeviceConnectRecordDao;
 import com.waho.dao.DeviceDao;
+import com.waho.dao.impl.DeviceConnectRecordDaoImpl;
 import com.waho.dao.impl.DeviceDaoImpl;
 import com.waho.domain.Device;
+import com.waho.domain.DeviceConnectRecord;
 import com.waho.domain.SocketCommand;
 import com.waho.socket.state.SocketState;
 import com.waho.socket.state.impl.RegisterState;
@@ -239,9 +242,12 @@ public class SocketOperate extends Thread {
 			// 将设备状态更新至离线
 			if (device.getDeviceMac() != null) {
 				device.setOnline(false);
+				DeviceConnectRecordDao dcrDao = new DeviceConnectRecordDaoImpl();
+				DeviceConnectRecord dcr = new DeviceConnectRecord(device.getDeviceMac(), new Date(), false);
 				try {
 					SocketDeviceDao.updateDeviceOnline(device);
 					SocketDeviceDao.updateDeviceRegister(device.getDeviceMac(), new Date(), 0);
+					dcrDao.insert(dcr);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

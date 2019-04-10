@@ -1,6 +1,5 @@
 package com.waho.service.impl;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +20,6 @@ import com.waho.domain.SocketCommand;
 import com.waho.domain.User;
 import com.waho.domain.UserMessage;
 import com.waho.service.UserService;
-import com.waho.util.Protocol3762Handler;
-import com.waho.util.Protocol645Handler;
 
 public class UserServiceImpl implements UserService {
 
@@ -448,6 +445,19 @@ public class UserServiceImpl implements UserService {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	@Override
+	public Node serachNode(String nodeAddr) {
+		NodeDao nodeDao = new NodeDaoImpl();
+		Node node = null;
+		try {
+			 node= nodeDao.selectNodeByNodeAddr(nodeAddr);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return node;
 	}	
-	
+
 }

@@ -23,6 +23,8 @@
 			<ul class="layui-nav layui-layout-left">
 				<li class="layui-nav-item"><a
 					href="javascript:;" onclick="refresh()">首页</a></li>
+				<li class="layui-nav-item"><a
+					href="${pageContext.request.contextPath}/warnningMessageServlet?" target="fname">报警<span class="layui-badge">9</span></a></li>
 			</ul>
 			<ul class="layui-nav layui-layout-right">
 				<li class="layui-nav-item"><a href="javascript:;"> <img

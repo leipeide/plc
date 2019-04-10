@@ -1,12 +1,16 @@
 package com.waho.socket.util;
 
+import java.util.Date;
+
 import com.waho.dao.NodeDao;
+import com.waho.dao.RecordDao;
 import com.waho.dao.impl.NodeDaoImpl;
+import com.waho.dao.impl.RecordDaoImpl;
 import com.waho.domain.Device;
 import com.waho.domain.SocketCommand;
-import com.waho.util.Protocol645Handler;
 import com.waho.util.SocketCommandHandler;
 import com.waho.domain.Node;
+import com.waho.domain.Record;
 
 /**
  * 接收到写节点状态回复后的处理
@@ -40,8 +44,11 @@ public class CmdWriteNodeStateHandler extends SocketDataHandler {
 			if (node != null) {
 				node.setDeviceid(device.getId());
 				NodeDao nodeDao = new NodeDaoImpl();
+				Record record = new Record(new Date(), node);
+				RecordDao recordDao = new RecordDaoImpl();
 				try {
 					nodeDao.updateNodeStateAndPowerByNodeAddrAndDeviceid(node);
+					recordDao.insert(record);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

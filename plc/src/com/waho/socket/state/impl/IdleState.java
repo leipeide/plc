@@ -29,18 +29,18 @@ import com.waho.socket.util.SocketDataHandler;
  *
  */
 public class IdleState implements SocketState {
-
-	private static volatile IdleState instance;
-
+	//用以声明变量的值可能随时会别的线程修改，使用volatile修饰的变量会强制将修改的值立即写入主存
+	private static volatile IdleState instance; 
+	//每5次间隔轮询一次
 	private static Integer SlowTimes = 5;
-
-	private Logger logger = Logger.getLogger(this.getClass());
-
+	//日志输出调试
+	private Logger logger = Logger.getLogger(this.getClass()); 
+	//节点集合
 	private List<Node> nodeList;
-	
+	//轮询时间计时
 	private Integer pollCount = 0;
-	
-	private Integer pollSizeMemory = 0;
+	//轮询查询过的节点个数
+	private Integer pollSizeMemory = 0; //
 
 	private Integer slowCount = 0;
 

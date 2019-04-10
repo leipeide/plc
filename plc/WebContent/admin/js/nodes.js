@@ -43,11 +43,11 @@ function nodeControl(url, nodeid, light1State, light1PowerPercent, light2State, 
 			content : url + "?nodeid=" + nodeid + "&light1State=" + light1State + "&light1PowerPercent=" + light1PowerPercent + "&light2State=" + light2State + "&light2PowerPercent=" + light2PowerPercent,
 			closeBtn : 1,
 			type : 2,
-			btn : '关闭',
+		    /*btn : '关闭',
 			yes : function(index, layero) {
 				// 按钮【按钮一】的回调
 				layer.close(index);
-			},
+			},*/
 			cancel : function() {
 				// 右上角关闭回调
 

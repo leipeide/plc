@@ -12,11 +12,11 @@ function deviceBroadcastControl(url, deviceid) {
 			content : url+"?deviceid="+deviceid,
 			closeBtn: 1,
 			type: 2,
-			btn : '关闭',
+			/*btn : '关闭',
 			yes : function(index, layero) {
 				// 按钮【按钮一】的回调
 				layer.close(index);
-			},
+			},*/
 			cancel : function() {
 				// 右上角关闭回调
 

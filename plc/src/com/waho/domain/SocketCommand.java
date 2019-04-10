@@ -390,7 +390,7 @@ public class SocketCommand {
 		if (bytes[0] == HEADER && bytes[len - 1] == TAIL && len == temp) {// 头尾正确&&长度正确
 			// sc.setLen(bytes[1]);
 			byte info[] = new byte[4];
-			System.arraycopy(bytes, 2, info, 0, 4);  //数据帧里取出信息域？
+			System.arraycopy(bytes, 2, info, 0, 4);  //数据帧里取出信息域
 			sc.setInfo(info);
 			sc.setCommand(bytes[6]);
 			int dataLen = len - LENGTH_WITHOUT_DATA;

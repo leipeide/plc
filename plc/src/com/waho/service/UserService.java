@@ -132,7 +132,7 @@ public interface UserService {
      * @param deviceRename
      * @return
      */
-	public boolean DeviceRename(int deviceid, String deviceRename);
+	public boolean deviceRename(int deviceid, String deviceRename);
 	/**
 	 * 修改用户密码
 	 * @param userid
@@ -142,9 +142,10 @@ public interface UserService {
 	public boolean updateUserPassword(int userid, String newPassword);
 	/**
 	 * 搜索节点功能
+	 * @param deviceid 
 	 * @param nodeAddr
 	 * @return
 	 */
-	public Node serachNode(String nodeAddr);
+	public Node serachNode(int deviceid, String nodeAddr);
 	
 }

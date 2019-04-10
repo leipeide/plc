@@ -410,7 +410,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean DeviceRename(int deviceid, String deviceRename) {
+	public boolean deviceRename(int deviceid, String deviceRename) {
 		DeviceDao deviceDao = new DeviceDaoImpl();
 		Device device = null;
 		boolean result = false;
@@ -448,11 +448,19 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Node serachNode(String nodeAddr) {
+	public Node serachNode(int deviceid,String nodeAddr) {
 		NodeDao nodeDao = new NodeDaoImpl();
+		List<Node> list = null;
 		Node node = null;
 		try {
-			 node= nodeDao.selectNodeByNodeAddr(nodeAddr);
+			 list = nodeDao.selectNodesByDeviceid(deviceid);
+			 for(Node result:list) {
+				 if(nodeAddr.equals(result.getNodeAddr())) {
+					 node = result;
+					 break;
+				 }
+			 }
+			// node= nodeDao.selectNodeByNodeAddr(nodeAddr);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

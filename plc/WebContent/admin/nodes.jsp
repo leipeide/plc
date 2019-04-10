@@ -18,7 +18,7 @@
 </style> 
 </head>
 <body>
-	<form id="nodeform" class="layui-form" action="${pageContext.request.contextPath }/nodeSerachServlet?deivceid=${deviceid}" method="post">
+	<form id="nodeform" class="layui-form" action="${pageContext.request.contextPath }/nodeSerachServlet?deviceid=${deviceid}" method="post">
 	<div class="nav">   
  		<div class="layui-btn-container">
   			<button id="addBt" class="layui-btn layui-btn-sm" lay-submit lay-filter="addBt">增加节点</button>

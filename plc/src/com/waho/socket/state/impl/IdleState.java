@@ -35,19 +35,19 @@ import com.waho.socket.util.SocketDataHandler;
  *
  */
 public class IdleState implements SocketState {
-
+	//每5次间隔轮询一次
 	private static Integer SlowTimes = 5;
-
+	//超时报警判断的基准时间
 	private static long AlarmTime = 1000 * 60 * 60 * 12;
-
-	private static int PollingCycle = 1200;// 一小时
-
+	// 一小时（线程一秒执行一次，3秒调用一次轮询逻辑，乘以1200 == 1h）
+	private static int PollingCycle = 1200;
+	//日志输出调试
 	private Logger logger = Logger.getLogger(this.getClass());
-
+	//节点集合
 	private List<Node> nodeList;
-
+	//轮询时间计时
 	private Integer pollCount = 0;
-
+	//轮询查询过的节点个数
 	private Integer pollSizeMemory = 0;
 
 	private Integer slowCount = 0;

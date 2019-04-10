@@ -37,9 +37,11 @@ public class NodeSerachServlet extends HttpServlet {
 			response.setContentType("text/html;charset=UTF-8");
 			//1.获取表单数据：搜索的节点地址
 			String nodeAddrStr = request.getParameter("serach");
+			String deviceidStr = request.getParameter("deviceid");
+			int deviceid = Integer.parseInt(deviceidStr);
 			//2.调用业务逻辑
 			UserService us = new UserServiceImpl();
-		    Node node = us.serachNode(nodeAddrStr);
+		    Node node = us.serachNode(deviceid,nodeAddrStr);
 			//3.分发转向
 		    if(node != null) {
 		    	request.setAttribute("node", node);

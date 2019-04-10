@@ -12,7 +12,7 @@
 <title>Insert title here</title>
 <style type="text/css">
 	.nav{width:600px;height:50px;border:1px;}
-	.div-btn {width:100px;height:50px;float:left;}
+/* 	.div-btn {width:100px;height:50px;float:left;} */
 	.div-select{width:200px;height:50px; float:left;border:1px;solid:#FFF}
 	.div-power{float:left; width:500px;height:350px;}
 	.div-time{float:right;width:500px;height:350px;}
@@ -21,8 +21,8 @@
 <body>
 	<form src="" method="post">
 	<div  class="nav">
-		<div class="div-btn">
-			<button  class="layui-btn layui-btn-sm" onclick="backNextPage()">返回上一页</button></div>
+<!-- 		<div class="div-btn"> -->
+<!-- 			<button  class="layui-btn layui-btn-sm" onclick="backNextPage()">返回上一页</button></div> -->
 		<div class="div-select">
  			<input class="layui-input" id="test6" type="text" placeholder="请选择日期范围"></div>
 			<!--<select class="chosen-select" id="countType" lay-filter="Filter" lay-verify="" style="height:30px" onchange="getDataInfo()" >

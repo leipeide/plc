@@ -39,7 +39,7 @@ public class DeviceRenameServlet extends HttpServlet {
 		
 		if(deviceRename != null) {
 			UserService us = new UserServiceImpl();
-			boolean result = us.DeviceRename(deviceid,deviceRename);
+			boolean result = us.deviceRename(deviceid,deviceRename);
 			if(result) {
 				response.getWriter().write("重命名成功");
 			}else {

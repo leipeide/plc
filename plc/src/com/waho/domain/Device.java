@@ -1,8 +1,9 @@
 package com.waho.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Device {
+public class Device implements Serializable{ //implements Serializable添加
 	private int id;
 	/**
 	 * 用户id

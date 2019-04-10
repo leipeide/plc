@@ -13,9 +13,9 @@
 </head>
 <body>
 	<form  action="" method="post">   
- 		<div class="layui-btn-container">
-  			<button id="returnBt" class="layui-btn layui-btn-sm" onclick="backNextPage()">返回节点页面</button>
-   		</div>
+<!--  		<div class="layui-btn-container"> -->
+<!--   			<button id="returnBt" class="layui-btn layui-btn-sm" onclick="backNextPage()">返回节点页面</button> -->
+<!--    		</div> -->
 		<table class="layui-table">
 			<colgroup>
 				<col width="150">

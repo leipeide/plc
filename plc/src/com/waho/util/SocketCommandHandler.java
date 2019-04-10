@@ -28,7 +28,7 @@ public class SocketCommandHandler {
 			node.setLight1PowerPercent(sc.getData()[7] & 0xFF);
 			if (sc.getData()[8] == 0x01) {
 				node.setLight2State(true);
-			} else if (sc.getData()[8] == 0x01) {
+			} else if (sc.getData()[8] == 0x01) { //
 				node.setLight2State(false);
 			}
 			node.setLight2PowerPercent(sc.getData()[9] & 0xFF);
@@ -43,7 +43,7 @@ public class SocketCommandHandler {
 			node.setLight1Power(powerInt);
 			if (sc.getData()[8] == 0x01) {
 				node.setLight1State(true);
-			} else if (sc.getData()[8] == 0x01) {
+			} else if (sc.getData()[8] == 0x01) {//
 				node.setLight1State(false);
 			}
 			node.setLight1PowerPercent(sc.getData()[9] & 0xFF);
@@ -52,16 +52,16 @@ public class SocketCommandHandler {
 			power[1] = (byte) (sc.getData()[10]);
 			powerInt = Integer.parseInt(SocketCommand.parseBytesToHexString(power, 2), 16);
 			node.setLight2Power(powerInt);
-			if (sc.getData()[12] == 0x01) {
+			if (sc.getData()[12] == 0x01) {  //
 				node.setLight2State(true);
-			} else if (sc.getData()[12] == 0x01) {
+			} else if (sc.getData()[12] == 0x01) {//
 				node.setLight2State(false);
 			}
 			node.setLight2PowerPercent(sc.getData()[13] & 0xFF);
-			
 			node.setPower(node.getLight1Power() + node.getLight2Power());
 			break;
 		}
+		//System.out.println(node.getLight1Power()+node.getLight1PowerPercent()+node.getLight2Power()+node.getLight2PowerPercent());
 		return node;
 	}
 

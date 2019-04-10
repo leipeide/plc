@@ -1,6 +1,5 @@
 package com.waho.domain;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import com.waho.util.Protocol3762Handler;

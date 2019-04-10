@@ -1,21 +1,27 @@
 package com.waho.socket.state.impl;
 
-import java.io 
-
-.IOException;
-import java.io 
-
-.OutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.waho.dao.AlarmDao;
+import com.waho.dao.DeviceConnectRecordDao;
 import com.waho.dao.NodeDao;
+import com.waho.dao.RecordDao;
 import com.waho.dao.UserMessageDao;
+import com.waho.dao.impl.AlarmDaoImpl;
+import com.waho.dao.impl.DeviceConnectRecordDaoImpl;
 import com.waho.dao.impl.NodeDaoImpl;
+import com.waho.dao.impl.RecordDaoImpl;
 import com.waho.dao.impl.UserMessageDaoImpl;
+import com.waho.domain.Alarm;
 import com.waho.domain.Device;
+import com.waho.domain.DeviceConnectRecord;
 import com.waho.domain.Node;
+import com.waho.domain.Record;
 import com.waho.domain.SocketCommand;
 import com.waho.domain.UserMessage;
 import com.waho.socket.state.SocketState;
@@ -30,21 +36,29 @@ import com.waho.socket.util.SocketDataHandler;
  */
 public class IdleState implements SocketState {
 
-	private static volatile IdleState instance;
-
 	private static Integer SlowTimes = 5;
+
+	private static long AlarmTime = 1000 * 60 * 60 * 12;
+
+	private static int PollingCycle = 1200;// 一小时
 
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	private List<Node> nodeList;
-	
+
 	private Integer pollCount = 0;
-	
+
 	private Integer pollSizeMemory = 0;
 
 	private Integer slowCount = 0;
 
 	private NodeDao nodeDao = new NodeDaoImpl();
+
+	private RecordDao recordDao = new RecordDaoImpl();
+
+	private AlarmDao alarmDao = new AlarmDaoImpl();
+
+	private DeviceConnectRecordDao dcrDao = new DeviceConnectRecordDaoImpl();
 
 	public static IdleState getInstance() {
 		return new IdleState();
@@ -111,13 +125,63 @@ public class IdleState implements SocketState {
 									um.setExecuted(false);
 									um.setData(SocketCommand.GenerateReadNodeStateCommandData(node.getNodeAddr()));
 									out.write(um.tobyteArray());
-									logger.info("service to " + device.getDeviceMac() + ": " + SocketCommand.parseBytesToHexString(um.tobyteArray(), um.tobyteArray().length));
+									logger.info("service to " + device.getDeviceMac() + ": " + SocketCommand
+											.parseBytesToHexString(um.tobyteArray(), um.tobyteArray().length));
 								}
 							}
 						}
 						pollCount++;
 					} else {
-						pollCount = -1200;
+						pollCount = -PollingCycle;
+						// 报警逻辑判断
+						// 1. 遍历，根据节点列表，查询最后一条功率时间记录。
+						Record record = null;
+						// 获取设备在线时长
+						DeviceConnectRecord dcr = dcrDao.selectLastRecordByDeviceMac(device.getDeviceMac());
+						if (dcr != null && dcr.isConnection() == true) {
+							for (Node node : nodeList) {
+
+								record = recordDao.selectLastRecordByNodeAddrAndDeviceMac(node.getNodeAddr(),
+										node.getDeviceMac());
+								Date date = new Date();
+
+								if (record != null) {
+									// 2. 判断回复时间是否已经超过12个小时。
+									if (date.getTime() - record.getDate().getTime() > AlarmTime
+											&& date.getTime() - dcr.getDate().getTime() > AlarmTime) {
+										// 2.1 超过12个小时,且集控器在线时长已经超过12个小时
+										// 如果数据库中没有相应的报警信息，生成报警信息，type = ALARM_DISCONNECT，存入数据库。
+										Alarm alarm = alarmDao.selectByDeviceMacAndNodeAddrAndType(node.getDeviceMac(), node.getNodeAddr(), Alarm.ALARM_DISCONNECT);
+										if (alarm == null) {
+											alarm = new Alarm(new Date(), node.getDeviceMac(), node.getNodeAddr(),
+													Alarm.ALARM_DISCONNECT);
+											alarmDao.insert(alarm);
+										}
+									} else {
+										// 判断是否有相应的超时报警信息，如果有，删除
+										Alarm alarm = alarmDao.selectByDeviceMacAndNodeAddrAndType(node.getDeviceMac(), node.getNodeAddr(), Alarm.ALARM_DISCONNECT);
+										if (alarm != null) {
+											alarmDao.deleteById(alarm.getId());
+										}
+										// 2.2 未超过12个小时，判断是否过功率，如果过功率，生成报警信息，type = ALARM_OVER_POWER，存入数据库。
+										if (record.getLight1Power() > Alarm.LIGHT1_OVERLOAD_VOLTAGE
+												|| record.getLight2Power() > Alarm.LIGHT2_OVERLOAD_VOLTAGE
+												|| record.getPower() > Alarm.TOTAL_OVERLOAD_VOLTAGE) {
+											alarm = new Alarm(new Date(), node.getDeviceMac(), node.getNodeAddr(),
+													Alarm.ALARM_OVERLOAD);
+											alarmDao.insert(alarm);
+										}
+									}
+								} else {
+									// 未查询到节点功率记录,如果集控器链接已超过12个小时，报警
+									if (date.getTime() - dcr.getDate().getTime() > AlarmTime) {
+										Alarm alarm = new Alarm(new Date(), node.getDeviceMac(), node.getNodeAddr(),
+												Alarm.ALARM_DISCONNECT);
+										alarmDao.insert(alarm);
+									}
+								}
+							}
+						}
 					}
 				}
 			}

@@ -1,4 +1,8 @@
-function checkOrCancelAll(){
+/**
+ * 选择删除报警信息
+ * @returns
+ */
+/*function checkOrCancelAll(){
 	var chAll = document.getElementById("chAll");
 	//2.获取选中状态
 	var checkedAll = chAll.checked;
@@ -16,50 +20,30 @@ function checkOrCancelAll(){
 			oneChecked[i].checked=false;
 		}
 	}
-}
-
-/**
- * 用户报警信息显示
- * @returns
- */
-//A.创建XMLHttpRequest对象
-function getXMLHttpRequest() {
-	var xmlhttp;
-	if (window.XMLHttpRequest) {
-		// code for IE7+,Firefox,Chrome,Opera,Safari
-		xmlhttp = new XMLHttpRequest();
-	} else {
-		// code for IE5,IE6,
-		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	return xmlhttp;
-}
-//B.创建回调函数，根据响应动态更新页面
-function warnningAJAXRequest() {
-	//1.创建请求
-	var req = getXMLHttpRequest();
-	//4.服务器处理
-	req.onreadystatechange = function() {
-		if (req.readyState == 4) {// 请求成功
-			if (req.status == 200) {// 服务器响应成功,动态获取报警信息表格
-			/*
-				var table = document.getElementById("tbody"); 
-				table.innerHTML = inner;
-				//从后台获取对象
-				for(;;){//for循环信息对象，生成表格
-					inner = inner + " ";
-				}
-			*/	
+}*/
+function delWM(url,userid){
+	layui.use('layer', function() {
+		var layer = layui.layer;
+		layer.open({
+			area : ['auto','350px'],
+			//offset:['0px','350px'],
+			btnAlign : 'c',
+			resize : false,
+			content : url + "?userid=" + userid,
+			closeBtn : 1,
+			type : 2,
+			/*btn : '关闭',
+			yes : function(index, layero) {
+				// 按钮【按钮一】的回调
+				layer.close(index);
+			},*/
+			cancel : function() {
+				// 右上角关闭回调
+				location.reload();
+				// return false 开启该代码可禁止点击该按钮关闭
 			}
-		}
-	}
-	//1.建立链接
-	req.open("get", "${pageContext.request.contextPath }/");
-	//2.发送请求
-	req.send(null);
+		});
+	});
 }
+	
 
-window.onload = function() {
-	warnningAJAXRequest();
-}
-setInterval(warnningAJAXRequest,1000*3);

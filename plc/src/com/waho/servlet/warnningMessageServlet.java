@@ -29,8 +29,10 @@ public class warnningMessageServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html,charset=UTF-8");
 		//1.获取表单数据
+		String userid = request.getParameter("userid");
 		//2.处理业务逻辑
 		//3.分发转向
+		request.setAttribute("userid", userid);
 		request.getRequestDispatcher("/admin/warnningMessage.jsp").forward(request, response);
 	}
 

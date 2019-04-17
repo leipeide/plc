@@ -53,10 +53,10 @@
 				</tr>
 			</thead>
 			<tbody id="table_body">
-			<!--  
+			<!-- 
 			<c:forEach items="${pb.nodes}" var="node">
 					<tr>
-						<td>${node.nodeAddr }&nbsp;&nbsp;<a href="${pageContext.request.contextPath }/nodeMessageChartServlet" ><i class="layui-icon layui-icon-chart"></i></a>
+						<td>${node.nodeAddr }&nbsp;&nbsp;<a href="${pageContext.request.contextPath }/nodeMessageChartServlet?nodeAddr=${node.nodeAddr}&deviceMac=${deviceMac}" ><i class="layui-icon layui-icon-chart"></i></a>
 						</td>
 						<td><a href="javascript:;"
 							onclick="reName('${pageContext.request.contextPath }/nodeRenameFormServlet',${node.id})">${node.nodeName }</a></td>
@@ -71,7 +71,7 @@
 							onclick="nodeRefresh('${pageContext.request.contextPath }/nodeRefreshServlet?nodeid=${node.id }')">刷新</a></td>
 					</tr>
 				</c:forEach>
-				 -->
+				 --> 
 			</tbody>
 		</table>
 	</form>
@@ -145,7 +145,7 @@
 					var node;
 					for (var i = 0; i < nodes.length; i++) {
 						node = nodes[i];
-						inner = inner + "<tr><td>" + node.nodeAddr + "&nbsp;&nbsp;<a href='/plc/nodeMessageChartServlet?nodeAddr=" + node.nodeAddr + "'><i class='layui-icon layui-icon-chart'></i></a></td>\
+						inner = inner + "<tr><td>" + node.nodeAddr + "&nbsp;&nbsp;<a href='/plc/nodeMessageChartServlet?nodeAddr="+ node.nodeAddr +"'><i class='layui-icon layui-icon-chart'></i></a></td>\
 						<td><a href='javascript:;'onclick=\"reName('/plc/nodeRenameFormServlet'," + node.id + ")\">" +node.nodeName +"</a></td>\
 							<td>";
 							if (node.light1State == true) {

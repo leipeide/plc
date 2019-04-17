@@ -9,8 +9,6 @@
 	href="${pageContext.request.contextPath }/layui/css/layui.css">
 <script type="text/javascript"
 	src="${pageContext.request.contextPath }/layui/layui.js"></script>
-<!-- <script type="text/javascript" -->
-<%-- 	src="${pageContext.request.contextPath }/admin/js/jquery.min.js"></script> --%>
 <title>登录界面</title>
 
 <style>

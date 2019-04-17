@@ -33,6 +33,7 @@
 				<input id="text1" type="text" name="light1PowerPercent" required
 					lay-verify="number" value="${light1PowerPercent }"
 					autocomplete="off" class="layui-input" onblur="check1(this)">
+<!-- 					onblur="check1(this)" -->
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -52,6 +53,7 @@
 				<input id="text2" type="text" name="light2PowerPercent" required
 					lay-verify="number" value="${light2PowerPercent }"
 					autocomplete="off" class="layui-input" onblur="check2(this)">
+<!-- 					onblur="check2(this)" -->
 			</div>
 		</div>
 		<div class="layui-form-item">

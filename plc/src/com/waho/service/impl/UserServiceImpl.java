@@ -1,21 +1,31 @@
 package com.waho.service.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.waho.dao.AlarmDao;
 import com.waho.dao.DeviceDao;
 import com.waho.dao.NodeDao;
+import com.waho.dao.RecordDao;
 import com.waho.dao.UserDao;
 import com.waho.dao.UserMessageDao;
+import com.waho.dao.impl.AlarmDaoImpl;
 import com.waho.dao.impl.DeviceDaoImpl;
 import com.waho.dao.impl.NodeDaoImpl;
+import com.waho.dao.impl.RecordDaoImpl;
 import com.waho.dao.impl.UserDaoImpl;
 import com.waho.dao.impl.UserMessageDaoImpl;
+import com.waho.domain.Alarm;
 import com.waho.domain.Device;
 import com.waho.domain.Node;
 import com.waho.domain.PageBean;
+import com.waho.domain.Record;
 import com.waho.domain.SocketCommand;
 import com.waho.domain.User;
 import com.waho.domain.UserMessage;
@@ -38,6 +48,7 @@ public class UserServiceImpl implements UserService {
 				DeviceDao deviceDao = new DeviceDaoImpl();
 				List<Device> devices = deviceDao.selectDeviceByUserid(user.getId());
 				resultMap.put("devices", devices);
+			
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -466,6 +477,144 @@ public class UserServiceImpl implements UserService {
 			e.printStackTrace();
 		}
 		return node;
-	}	
+	}
 
+	@Override
+	public Map<String, Object> DateRangeNodeChartMessage(String nodeAddr,String date) {
+    	NodeDao nDao = new NodeDaoImpl();
+    	RecordDao rDao = new RecordDaoImpl();
+    	Map<String, Object> recordMap = null;
+    	String startDateStr = date.substring(0, 11);
+    	String endDateStr = date.substring(14, 25);
+		//注意：SimpleDateFormat构造函数的样式与strDate的样式必须相符
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日");
+    	try {
+    		Date startDate = simpleDateFormat.parse(startDateStr);
+			Date endDate = simpleDateFormat.parse(endDateStr);
+    		//获取集控器Mac地址
+    		Node node = nDao.selectNodeByNodeAddr(nodeAddr);
+    		String deviceMac = node.getDeviceMac();
+    		//根据时间范围查询该时间段内所有节点的记录
+    		ArrayList<Record> powerRecord = new ArrayList<Record>();
+			List<Record> record = rDao.selectOneDayNodePowerMessage(startDate,endDate);
+			if(record != null) {
+				for(int i = 0; i < record.size(); i++) {
+					recordMap = new HashMap<String, Object>();
+					Record newRecord = record.get(i);
+					if(deviceMac.equals(newRecord.getDeviceMac()) && 
+							nodeAddr.equals(newRecord.getNodeAddr())) {
+						powerRecord.add(newRecord);
+						}
+					recordMap.put("powerRecord", powerRecord);
+				}
+			}
+			
+		    for(int num = 0; num < powerRecord.size(); num++) {
+		    	boolean record0State1 = powerRecord.get(num).isLight1State();
+			    boolean record0State2 = powerRecord.get(num).isLight2State();	 
+		    	if(record0State1 || record0State2) {
+					ArrayList<Date> timelist = new ArrayList<Date>();
+					timelist.add(powerRecord.get(num).getDate());
+					int x = num+1;
+					boolean result = false;
+					for (int j = x; j < powerRecord.size(); j++) {
+						boolean recordState1 = powerRecord.get(j).isLight1State();
+						boolean recordState2 = powerRecord.get(j).isLight2State();
+						if((recordState1 || recordState2) == result) {
+							Date time = powerRecord.get(j).getDate();
+							timelist.add(time);
+							result = !result;
+						}
+						recordMap.put("timeRecord", timelist);
+					}
+					//注释
+					//System.out.println("时间集合大小："+timelist.size());
+		    	}
+		    	break;
+		    }		
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return recordMap;
+	}
+
+	@Override
+	public Map<String, Object> getWarnningMessageById(int userid) {
+		Map<String, Object> alarmMap = null;
+		AlarmDao aDao = new AlarmDaoImpl();
+		DeviceDao dDao = new DeviceDaoImpl();
+ 		List<Alarm> alarm;
+ 		List<Alarm> alarmRecord = null;
+ 		int total = 0;
+			try {
+				List<Device> list = dDao.selectDeviceByUserid(userid);
+				alarmMap = new HashMap<String, Object>();
+				alarmRecord = new ArrayList<>();
+				for(Device device:list) {
+					alarm = aDao.selectAlarmRecordByDeviceMac(device.getDeviceMac());
+					int num = alarm.size();
+					total = total+num;
+					alarmRecord.addAll(alarm);
+				}
+				alarmMap.put("alarmList", alarmRecord);
+				alarmMap.put("warnningNum", total); 
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return alarmMap;
+	}
+
+	@Override
+	public Boolean delWarnningMessage(String[] alarmId) {
+		AlarmDao aDao = new AlarmDaoImpl();
+		String id;
+		int num = 0;
+		boolean result = false;
+		try {
+			for(int i = 0; i < alarmId.length; i++) {
+				id = alarmId[i];
+				if(aDao.deleteById(Integer.parseInt(id)) == 1) {
+					num = num + 1;
+				}
+				if(num == alarmId.length) {
+					result = true;
+				}
+			}
+		} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public int getWmNumById(int userid) {
+		//获取报警个数
+		DeviceDao dDao = new DeviceDaoImpl();
+		AlarmDao aDao = new AlarmDaoImpl();
+		int total = 0;
+		List<Device> devices;
+		try {
+			devices = dDao.selectDeviceByUserid(userid);
+			for(Device device:devices) {
+				List<Alarm> alarm = aDao.selectAlarmRecordByDeviceMac(device.getDeviceMac());
+				int num = alarm.size();
+				total = total+num;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		return total;
+	}
+	
+	
+	
 }

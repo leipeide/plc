@@ -1,8 +1,13 @@
 package com.waho.socket.util;
 
+import java.util.Date;
+
+import com.waho.dao.DeviceConnectRecordDao;
 import com.waho.dao.DeviceDao;
+import com.waho.dao.impl.DeviceConnectRecordDaoImpl;
 import com.waho.dao.impl.DeviceDaoImpl;
 import com.waho.domain.Device;
+import com.waho.domain.DeviceConnectRecord;
 import com.waho.domain.SocketCommand;
 
 /**
@@ -41,6 +46,10 @@ public class CmdReadMacHandler extends SocketDataHandler {
 			// 2、查询数据库，是否有mac地址相同的集控器，如果有，就修改状态，如果没有，就添加
 			DeviceDao deviceDao = new DeviceDaoImpl();
 			String deviceMac = SocketCommand.parseBytesToHexString(sc.getData(), sc.getLen() - SocketCommand.LENGTH_WITHOUT_DATA);
+			
+			// 添加登录时间记录
+			DeviceConnectRecordDao dcrDao = new DeviceConnectRecordDaoImpl();
+			DeviceConnectRecord dcr = new DeviceConnectRecord(deviceMac, new Date(), true);
 			try {
 				Device temp = deviceDao.selectDeviceByDeviceMac(deviceMac);
 				if (temp != null) {
@@ -56,6 +65,9 @@ public class CmdReadMacHandler extends SocketDataHandler {
 					temp.setCurrentNodes(0);
 					deviceDao.insert(temp);
 				}
+				
+				dcrDao.insert(dcr);
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

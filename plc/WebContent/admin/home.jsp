@@ -23,8 +23,8 @@
 			<ul class="layui-nav layui-layout-left">
 				<li class="layui-nav-item"><a
 					href="javascript:;" onclick="refresh()">首页</a></li>
-				<li class="layui-nav-item"><a
-					href="${pageContext.request.contextPath}/warnningMessageServlet?" target="fname">报警<span class="layui-badge">9</span></a></li>
+				<li class="layui-nav-item"><a                                       
+					href="${pageContext.request.contextPath}/warnningMessageServlet?userid=${result.user.id}" target="fname">报警<span class="layui-badge" id="warnning"></span></a></li>
 			</ul>
 			<ul class="layui-nav layui-layout-right">
 				<li class="layui-nav-item"><a href="javascript:;"> <img
@@ -80,7 +80,42 @@
 			© 雷培德PLC灯控系统
 		</div>
 	</div>
-<!-- 	<script type="text/javascript" -->
-<%-- 		src="${pageContext.request.contextPath }/admin/js/myLayui.js"></script> --%>
+	
+<script>
+ 	//A.创建XMLHttpRequest对象
+ 	function getXMLHttpRequest() {
+ 		var xmlhttp;
+ 		if (window.XMLHttpRequest) {
+ 			// code for IE7+,Firefox,Chrome,Opera,Safari
+ 			xmlhttp = new XMLHttpRequest();
+ 		} else {
+ 			// code for IE5,IE6,
+ 			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+ 		}
+ 		return xmlhttp;
+ 	}
+ 	//B.创建回调函数，根据响应动态更新页面
+ 	function AJAXRequest() {
+ 		//1.创建请求
+ 		var req = getXMLHttpRequest();
+ 		//4.服务器处理
+ 		req.onreadystatechange = function() {
+ 			if (req.readyState == 4) {// 请求成功
+ 				if (req.status == 200) {// 服务器响应成功,动态获取报警信息表格
+ 						var warnningNum = JSON.parse(req.responseText);
+ 						document.getElementById("warnning").innerHTML = warnningNum;
+ 				}
+ 			}
+ 		}
+ 		//1.建立链接
+ 		req.open("get","${pageContext.request.contextPath }/getWarnningMessageServlet1?userid=${result.user.id}");
+ 		//2.发送请求
+ 		req.send(null);
+ 	}
+ 	window.onload = function() {
+ 		AJAXRequest();
+ 	}
+ 	setInterval(AJAXRequest,1000*2);
+ </script>
 </body>
 </html>

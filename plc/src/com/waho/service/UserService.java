@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.waho.domain.Alarm;
 import com.waho.domain.Device;
 import com.waho.domain.Node;
 import com.waho.domain.PageBean;
@@ -147,5 +148,29 @@ public interface UserService {
 	 * @return
 	 */
 	public Node serachNode(int deviceid, String nodeAddr);
+	/**
+	 * 时间范围内节点功率与工作时长折线图
+	 * @param nodeAddr
+	 * @param date 
+	 */
+	public Map<String, Object> DateRangeNodeChartMessage(String nodeAddr, String date);
+	/**
+	 * 获取报警信息
+	 * @param userid
+	 * @return
+	 */
+	public Map<String, Object> getWarnningMessageById(int userid);
+	/**
+	 * 根据报警信息id删除报警信息
+	 * @param arrWarnningMessage
+	 * @return
+	 */
+	public Boolean delWarnningMessage(String[] arrWarnningMessage);
+	/**
+	 * 根据userid获取报警信息数量
+	 * @param parseInt
+	 * @return
+	 */
+	public int getWmNumById(int userid);
 	
 }

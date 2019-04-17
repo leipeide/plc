@@ -1,6 +1,5 @@
 package com.waho.domain;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import com.waho.util.Protocol3762Handler;
@@ -239,7 +238,6 @@ public class SocketCommand {
 		}if(light1PowerPercent1 < 0) {
 			light1PowerPercent1 = 0;
 		}
-		//System.out.println("广播控制灯1："+light1PowerPercent1);
 		
 		bytes[7] = (byte) (light1PowerPercent1);
 		if ("on".equals(light2State)) {
@@ -255,7 +253,6 @@ public class SocketCommand {
 				}if(light2PowerPercent2 < 0) {
 					light2PowerPercent2 = 0;
 				}
-				//System.out.println("广播控制灯2："+light2PowerPercent2);		
 		bytes[9] = (byte) (light2PowerPercent2);
 		return bytes;
 	}
@@ -284,7 +281,6 @@ public class SocketCommand {
 				}if(light1PowerPercent1 < 0) {
 					light1PowerPercent1 = 0;
 				}
-	   //System.out.println("广播控制灯1："+light1PowerPercent1);
 		bytes[7] = (byte) (light1PowerPercent1);
 		if ("on".equals(light2State)) {
 			bytes[8] = LIGHT_STATE_ON;
@@ -299,7 +295,6 @@ public class SocketCommand {
 		}if(light2PowerPercent2 < 0) {
 			light2PowerPercent2 = 0;
 		}
-		//System.out.println("广播控制灯2："+light2PowerPercent2);
 		bytes[9] = (byte) (light2PowerPercent2);
 		return bytes;
 	}

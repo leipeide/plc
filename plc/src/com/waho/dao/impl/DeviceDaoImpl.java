@@ -9,7 +9,6 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import com.waho.dao.DeviceDao;
 import com.waho.domain.Device;
-import com.waho.domain.User;
 import com.waho.util.C3P0Utils;
 
 public class DeviceDaoImpl implements DeviceDao {

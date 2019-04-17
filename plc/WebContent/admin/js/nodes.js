@@ -65,7 +65,6 @@ function nodeControl(url, nodeid, light1State, light1PowerPercent, light2State, 
  */
 function nodeRefresh(url) {
 	// ajax请求servlet，在响应成功回调函数中调用layui透明弹窗，刷新指令发送成功
-	
 	AJAXRefreshRequest(url, function(req) {
 		layui.use('layer', function() {
 			var layer = layui.layer;

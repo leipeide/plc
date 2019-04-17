@@ -1,31 +1,85 @@
-function backNextPage(){
-	window.history.back(-1);
+function getXMLHttpRequest() {
+		var xmlhttp;
+		if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+			xmlhttp = new XMLHttpRequest();
+		} else {// code for IE6, IE5
+			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		return xmlhttp;
+}	
+/**
+ * ajax请求数据并调用chartsFun1
+ * @param value
+ * @param url
+ * @returns
+ */
+function AJAXRequest(value, url) {
+	var req = getXMLHttpRequest();
+	req.onreadystatechange = function() {
+		if (req.readyState == 4) {// 请求成功
+			if (req.status == 200) {// 服务器响应成功
+				// 返回ajax请求数据req.responseText，数据用json封装
+				var json = JSON.parse(req.responseText);
+				// 调用chartsFun1函数，生成图表图
+				chartsFun1(json);
+			}
+		}
+	}
+	// 发送请求， 建立一个链接
+	req.open("post", url, true);
+	// POST方式需要自己设置http的请求头
+	req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	// POST方式发送数据
+	req.send("Date=" + value);
 }
-
-/*
-function chartsFun(value) {
-	alert(value);
-	var url = 
-	$.ajax({
-		  type:"post",
-		  url:"nodePowerChartServlet",  //ajax请求的地址
-		  dataType:"json",
-		  //data:{"timedata":value},
-		  data: '{"name": "uname", "age": 18}',
-		  async:false, //发送同步请求
-		  success:function (result){   //指的是请求并成功返回信息
-		  //getDataToDdate(title,X,result);
-			  getDataToDdate(result);
-		  }
-		});
-}	*/	
-
-function chartsFun(value){
-	var arr=value.split("-");
-	var startDate = arr[0];
-	var endDate = arr[1];
-	//alert(startDate+"+"+endDate); //2019/03/01 - 2019/03/29
-	var categories = ['00:00','01:00','02:00','03:00','04:00','05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'];
+	
+function chartsFun1(json){
+	//1.获取json数据，为chart1填充数据
+	var powerRecord = json.powerRecord;
+	var record ;
+	var power = [];
+	var time = [];
+	for(var i = 0; i < powerRecord.length; i++ ) {
+		record = powerRecord[i];
+		power.push(record.power);
+		var msTime = new Date(record.date);
+		dateTime = msTime.toLocaleString();
+		time.push(dateTime);
+		}
+	//2.获取json数据，为chart2填充数据
+	var timeRecord = json.timeRecord;
+	//var nd = 1000 * 24 * 60 * 60;
+    var nh = 1000 * 60 * 60;
+    var startTime;
+    var endTime;
+    var diff;
+    var hour;
+    var yWorkTime = [];
+    var xStartTime =[];
+	for(var j = 0; j < timeRecord.length; j++) {
+		if(j%2 == 0) {
+			startTime = parseInt(timeRecord[j]);
+			endTime = parseInt(timeRecord[j+1]);
+			//alert("开始毫秒值"+startTime);
+			//alert("结束毫秒值"+endTime);
+			var msEndTime = new Date(endTime);//毫秒数转换成时间
+			var msStartTime = new Date(startTime);
+			//alert("开始时间"+msStartTime);
+			//alert("结束"+msEndTime);
+			sTime = msStartTime.toLocaleString();//将时间转成字符串
+			//eTime = msEndTime.toLocaleString();
+			//alert(sTime);
+			//alert(eTime);
+			diff = msEndTime.getTime() - msStartTime.getTime();
+			//diff = endTime - startTime;
+			//alert("diff1:"+diff);
+			hour = diff/nh/24;
+			yWorkTime.push(hour);
+			xStartTime.push(sTime);
+		}	
+	}
+	
+	//3.设置图表的统一样式
 	Highcharts.setOptions({
 		chart: {
 			backgroundColor: {
@@ -41,85 +95,64 @@ function chartsFun(value){
 			plotBorderWidth: 1
 		}
 	});
+	//4.节点工作功率图表显示
 	var chart1 = new Highcharts.Chart({
 		chart: {
-			renderTo: 'container',
+			renderTo: 'powerChart',
 		},
 		title:{
 			text:'节点功率图',
 		},
 		xAxis: {
 			title: {
-				text: 'DateTime',
+				text:'DateTime',
 			},
 			type: 'datetime',
-			categories:categories,//从后台获取
+			categories:time,//从后台获取
 		},
 		series: [{
 			name: '功率/W',
-			data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4,29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
-			//pointStart: Date.UTC(startDate),
-			//categories:categories,
-			//pointInterval: 3600 * 1000 // one hour
+			data:power,
 		}],
-			
 		yAxis: {
+			max:400,
 			title: {
 				text: '功率 / W'
 			},
 		},
 	});
-
-	
-	
-//节点工作时长表	
+	//5.节点工作时长图表显示
 	var chart2 = new Highcharts.Chart({
 		chart: {
-			renderTo: 'container1',
+			renderTo: 'workTimeChart',
 			type: 'column',
+			//minPointLength: 10,
 		},
 		title: {
 			text: '节点工作时长图'
 		},
 		xAxis: {
 			title: {
-				text: '时间  /  h'
+				text: '时间  /  DateTime'
 			},
-			type: 'datetime'
+			type: 'datetime',
+			categories:xStartTime,
+				
 		},
 		yAxis: {
+			//tickPixelInterval:10,
 			title: {
-				text: '时长 / min'
+				text: '时长 / 天'
 			},
 		}, 
 		series: [{
-			name: '工作时间/h',
-			data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
-			pointStart: Date.UTC(2010, 0, 1),
-			pointInterval: 3600 * 1000 // one hour
+			name: '工作时间/天',
+			data:yWorkTime,
 		}]
 	});
-	
 
+	
 }
  
- /*
- //首先，在xAxis中设置x轴属性：
- xAxis: {
- //表示为时间，注意大小写
- type: 'datetime',
- //间距，时间戳，以下表示间距为1天，如果想表示间距为1周，就这么写
- //7243600*1000
- tickInterval:24 * 3600 * 1000,
- //格式化时间，day,week…
- dateTimeLabelFormats: {
- day: ‘%Y-%m-%d’
- }
- }
- //然后，传入正确格式的json数据，格式为：[[时间戳,data],[时间戳,data],[时间戳,data]…]（注意：时间戳要精确到毫秒，若只精确到秒，乘以1000即可）。
- //最后，在使用ajax更新数据时这样写：
- success: function(data){
- chart…series[0].addPoint(data,true,true)
- }*/
  
  

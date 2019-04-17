@@ -36,20 +36,14 @@ public class RefreshWelcomeServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json; charset=utf-8");
 		// 获取表单数据
-		//Date myDate = new Date();
-	    //String mytime=myDate.toLocaleString();
-		//System.out.println(mytime+":2019");
-		
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		//System.out.println(":2019"+username);
-		//System.out.println(":2019"+password);
+		
 		// 调用业务逻辑
 		UserService userService = new UserServiceImpl();
 		Map<String, Object> result = userService.login(username, password);
-		
-		//System.out.println("23"+JSON.toJSONString(result));	
 		response.getWriter().write(JSON.toJSONString(result));
+		//System.out.println("23"+JSON.toJSONString(result));	
 		
 	}
 

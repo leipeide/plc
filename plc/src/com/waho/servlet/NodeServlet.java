@@ -39,7 +39,6 @@ public class NodeServlet extends HttpServlet {
 		String light2State = request.getParameter("light2State");
 		String light1PowerPercent = request.getParameter("light1PowerPercent");
 		String light2PowerPercent = request.getParameter("light2PowerPercent");
-		//System.out.println("灯1状态："+light1State+"灯1功率："+light1PowerPercent+"灯2状态："+light2State+"灯2功率："+light2PowerPercent);
 		if (nodeid != null) {// 数据有效
 			// 调用业务逻辑
 			us.userWriteNodeCmd(Integer.parseInt(nodeid), light1State, light2State, light1PowerPercent, light2PowerPercent);

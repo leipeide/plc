@@ -14,37 +14,42 @@ import com.waho.service.UserService;
 import com.waho.service.impl.UserServiceImpl;
 
 /**
- * Servlet implementation class warnningMessageServlet
+ * Servlet implementation class SerachWMServlet
  */
-@WebServlet(name = "WarnningMessageServlet", urlPatterns = { "/warnningMessageServlet" })
-public class warnningMessageServlet extends HttpServlet {
+@WebServlet("/serachWMServlet")
+public class SerachWMServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public warnningMessageServlet() {
+    public SerachWMServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+	 */ 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
-		response.setContentType("text/html,charset=UTF-8");
-		//1.获取表单数据
+		response.setContentType("text/html; charset=utf-8");
+		//1.后获取表单数据
 		String userid = request.getParameter("userid");
-		//2.处理业务逻辑
-		if(userid != null) {
+		String deviceMac  = request.getParameter("selectDeviceMac");
+		String nodeAddr  = request.getParameter("selectNodeAddr");
+		String type  = request.getParameter("selectType");
+		String date  = request.getParameter("selectDate");
+		//System.out.println("mac:"+deviceMac+"nodeAddr:"+nodeAddr+"type:"+type+"date:"+date);
+		//2.调用业务逻辑
+		if(deviceMac != null || nodeAddr != null || type != null || date != null) {
 			UserService us = new UserServiceImpl();
-			Map<String, Object> alarmMap = us.getWarnningMessageById(Integer.parseInt(userid));
-		//3.分发转向
-			request.setAttribute("alarmMap", alarmMap);
+			Map<String, Object> alarmMap = us.serachWarnningMessageByFactor(Integer.parseInt(userid),deviceMac,nodeAddr,type,date);
+			//System.out.println(JSON.toJSONString(alarmMap));
+			//3.分发转向
 			request.setAttribute("userid", userid);
+			request.setAttribute("alarmMap", alarmMap);
 			request.getRequestDispatcher("/admin/warnningMessage.jsp").forward(request, response);
-		    
 		}
 	}
 

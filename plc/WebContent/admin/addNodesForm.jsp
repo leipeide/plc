@@ -34,7 +34,7 @@
          <div class="layui-form-item">
          	<label class='layui-form-label'>节点地址</label>
          	<div id="textdiv">
-					<!--<label class='layui-form-label'>节点地址</label> -->
+					<!--根据selected的值插入节点地址输入框 -->
 				</div>
          </div>
          

@@ -9,13 +9,17 @@ import org.apache.log4j.Logger;
 
 import com.waho.dao.AlarmDao;
 import com.waho.dao.DeviceConnectRecordDao;
+import com.waho.dao.DeviceDao;
 import com.waho.dao.NodeDao;
 import com.waho.dao.RecordDao;
+import com.waho.dao.UserDao;
 import com.waho.dao.UserMessageDao;
 import com.waho.dao.impl.AlarmDaoImpl;
 import com.waho.dao.impl.DeviceConnectRecordDaoImpl;
+import com.waho.dao.impl.DeviceDaoImpl;
 import com.waho.dao.impl.NodeDaoImpl;
 import com.waho.dao.impl.RecordDaoImpl;
+import com.waho.dao.impl.UserDaoImpl;
 import com.waho.dao.impl.UserMessageDaoImpl;
 import com.waho.domain.Alarm;
 import com.waho.domain.Device;
@@ -105,7 +109,7 @@ public class IdleState implements SocketState {
 					pollCount = 0;
 				}
 				slowCount = 0;
-			} else if (++slowCount >= SlowTimes) { // 未有指令执行，进行轮询操作
+			} else if (++slowCount >= SlowTimes) { // 未有指令执行，进行轮询操作（）
 				slowCount = 0;// 延时操作，函数三次调用只执行一次
 				nodeList = nodeDao.selectNodesByDeviceid(device.getId());
 				if (nodeList != null) {
@@ -140,7 +144,6 @@ public class IdleState implements SocketState {
 						DeviceConnectRecord dcr = dcrDao.selectLastRecordByDeviceMac(device.getDeviceMac());
 						if (dcr != null && dcr.isConnection() == true) {
 							for (Node node : nodeList) {
-
 								record = recordDao.selectLastRecordByNodeAddrAndDeviceMac(node.getNodeAddr(),
 										node.getDeviceMac());
 								Date date = new Date();
@@ -154,7 +157,7 @@ public class IdleState implements SocketState {
 										Alarm alarm = alarmDao.selectByDeviceMacAndNodeAddrAndType(node.getDeviceMac(), node.getNodeAddr(), Alarm.ALARM_DISCONNECT);
 										if (alarm == null) {
 											alarm = new Alarm(new Date(), node.getDeviceMac(), node.getNodeAddr(),
-													Alarm.ALARM_DISCONNECT);
+													Alarm.ALARM_DISCONNECT,um.getUserid());
 											alarmDao.insert(alarm);
 										}
 									} else {
@@ -167,16 +170,16 @@ public class IdleState implements SocketState {
 										if (record.getLight1Power() > Alarm.LIGHT1_OVERLOAD_VOLTAGE
 												|| record.getLight2Power() > Alarm.LIGHT2_OVERLOAD_VOLTAGE
 												|| record.getPower() > Alarm.TOTAL_OVERLOAD_VOLTAGE) {
-											alarm = new Alarm(new Date(), node.getDeviceMac(), node.getNodeAddr(),
-													Alarm.ALARM_OVERLOAD);
+											alarm = new Alarm(new Date(), node.getDeviceMac(), node.getNodeAddr(),Alarm.ALARM_OVERLOAD,um.getUserid()); //Alarm.ALARM_OVERLOAD
 											alarmDao.insert(alarm);
+										
 										}
 									}
 								} else {
 									// 未查询到节点功率记录,如果集控器链接已超过12个小时，报警
 									if (date.getTime() - dcr.getDate().getTime() > AlarmTime) {
 										Alarm alarm = new Alarm(new Date(), node.getDeviceMac(), node.getNodeAddr(),
-												Alarm.ALARM_DISCONNECT);
+												Alarm.ALARM_DISCONNECT,um.getUserid());
 										alarmDao.insert(alarm);
 									}
 								}

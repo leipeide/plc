@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.waho.domain.Alarm;
 import com.waho.domain.Device;
 import com.waho.domain.Node;
 import com.waho.domain.PageBean;
@@ -34,6 +35,14 @@ public interface UserService {
 	   * @return
 	   */
 	  public PageBean getNodesPageByDeviceid(int deviceid,int currentPage,int pageSize);
+	  /**
+	   * Ajax动态刷新节点页面
+	   * @param deviceid
+	   * @param currentPage
+	   * @param pageSize
+	   * @return
+	   */
+	  public PageBean refreshNodesPageByDeviceid(int deviceid, int currentPage, int pageSize);
 	/**
 	 * 用户发送节点控制指令（将用户指令写入数据库）
 	 * 
@@ -106,14 +115,13 @@ public interface UserService {
 	 * @param deviceid
 	 * @param nodeAddr
 	 */
-	//public void addNodesCmd(int deviceid,Collection<String> list);
 	public void addNodesCmd(int deviceid,String [] nodeAddrString);
 	/**
 	 * 删除集控器下的节点
 	 * @param deviceid
 	 * @param nodename
 	 */
-	public boolean delNodesCmd(int deviceid,String [] nodeAddr);
+	public int delNodesCmd(int deviceid,String [] nodeAddr);
 	/**
 	 *获取用户资料
 	 * @return
@@ -147,5 +155,47 @@ public interface UserService {
 	 * @return
 	 */
 	public Node serachNode(int deviceid, String nodeAddr);
+	/**
+	 * 时间范围内节点功率与工作时长折线图
+	 * @param nodeAddr
+	 * @param date 
+	 */
+	public Map<String, Object> DateRangeNodeChartMessage(String nodeAddr, String date);
+	/**
+	 * 获取报警信息
+	 * @param userid
+	 * @return
+	 */
+	public Map<String, Object> getWarnningMessageById(int userid);
+	/**
+	 * 根据报警信息id删除报警信息
+	 * @param arrWarnningMessage
+	 * @param userid 
+	 * @return
+	 */
+	public Map<String, Object> delWarnningMessage(String[] arrWarnningMessage, int userid);
+	/**
+	 * 根据userid获取报警信息数量和信息
+	 * @param parseInt
+	 * @return
+	 */
+	public Map<String, Object> getWarnningMessageAndNumById(int userid);
+	/**
+	 * 根据nodeAddr获取节点页面信息，返回到节点页面
+	 * @param nodeAddr
+	 * @param deviceId 
+	 * @return
+	 */
+	public PageBean returnNodesPageByReturnButton(String nodeAddr, int deviceId);
+	/**
+	 * 根据条件查找报警信息
+	 * @param userid
+	 * @param deviceMac
+	 * @param nodeAddr
+	 * @param type
+	 * @param date
+	 */
+	public Map<String, Object>  serachWarnningMessageByFactor(int userid, String deviceMac, String nodeAddr, String typeStr,
+			String date);
 	
 }

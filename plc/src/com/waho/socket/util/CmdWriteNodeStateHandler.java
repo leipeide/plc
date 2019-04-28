@@ -43,6 +43,7 @@ public class CmdWriteNodeStateHandler extends SocketDataHandler {
 			Node node = SocketCommandHandler.TransformCmdToNode(sc);
 			if (node != null) {
 				node.setDeviceid(device.getId());
+				node.setDeviceMac(device.getDeviceMac());
 				NodeDao nodeDao = new NodeDaoImpl();
 				Record record = new Record(new Date(), node);
 				RecordDao recordDao = new RecordDaoImpl();

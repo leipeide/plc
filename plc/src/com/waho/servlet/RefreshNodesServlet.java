@@ -36,26 +36,18 @@ public class RefreshNodesServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json; charset=utf-8");
 		// 获取表单数据
-		/*Date myDate = new Date();
-	    String mytime=myDate.toLocaleString();
-		System.out.println(mytime+":你好");*/
-		
 		String deviceidString = request.getParameter("deviceid");
-		String currPage = request.getParameter("currentPage"); //从上一页或下一页得到的数据
+		String currPage = request.getParameter("currentPage");
+		//1.每页显示数据的个数
 		int pageSize = 15;
-		int currentPage = 1; //当前页面
-		if(currPage != null) { // 第一次访问时currPage可能为空
-			currentPage = Integer.parseInt(currPage);
-		}
-		//System.out.println(deviceidString);
+		//2.当前页面
+		int currentPage = Integer.parseInt(currPage);
+		// 调用业务逻辑
 		if (deviceidString != null) {
 			int deviceid = Integer.parseInt(deviceidString);
-			// 调用业务逻辑
 			UserService userService = new UserServiceImpl();
-			PageBean pb = userService.getNodesPageByDeviceid(deviceid,currentPage,pageSize);
+			PageBean pb = userService.refreshNodesPageByDeviceid(deviceid,currentPage,pageSize);
 			// 分发转向
-			//request.setAttribute("deviceid", deviceid);
-			//System.out.println("23"+JSON.toJSONString(pb));
 			response.getWriter().write(JSON.toJSONString(pb));
 		}
 

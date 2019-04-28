@@ -31,11 +31,12 @@ public class NodeRefreshServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");
+		
 		// 获取表单数据
 		String nodeidStr = request.getParameter("nodeid");
+		// 调用业务逻辑
 		if (nodeidStr != null) {
 			int nodeid = Integer.parseInt(nodeidStr);
-			// 调用业务逻辑
 			UserService us = new UserServiceImpl();
 			us.refreshNodeDataById(nodeid);
 			// 分发转向

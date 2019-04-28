@@ -1,14 +1,20 @@
 package com.waho.dao.impl;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import com.waho.dao.RecordDao;
+import com.waho.domain.Node;
 import com.waho.domain.Record;
 import com.waho.util.C3P0Utils;
 
 public class RecordDaoImpl implements RecordDao {
-
 	@Override
 	public Record selectLastRecordByNodeAddrAndDeviceMac(String nodeAddr, String deviceMac) throws Exception {
 		QueryRunner qr = new QueryRunner(C3P0Utils.getDataSource());
@@ -26,4 +32,12 @@ public class RecordDaoImpl implements RecordDao {
 				record.getLight1Power(), record.getLight2Power(), record.getPower());
 	}
 
+	@Override
+	public List<Record> selectOneDayNodePowerMessage(Date startDate,Date endDate) throws SQLException {
+		QueryRunner qr = new QueryRunner(C3P0Utils.getDataSource());
+		return qr.query("select * from record where date>=? AND date<=?", new BeanListHandler<Record>(Record.class),startDate,endDate);	
+	   
+	} 
+
+	
 }

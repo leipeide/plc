@@ -7,7 +7,10 @@
 function deviceOnclick(url,id) {
 	document.getElementById('body-div').innerHTML = "<iframe style='min-height: 500px' name='fname' frameborder='0' scrolling='yes' width='100%' src='"+url+"?deviceid="+id+"' class='body-frame'></iframe>";
 }
-
+function warnningOnclick(url,id) {
+	document.getElementById('body-div').innerHTML = "<iframe style='min-height: 500px' name='fname' frameborder='0' scrolling='yes' width='100%' src='"+url+"?userid="+id+"' class='body-frame'></iframe>";
+	
+}
 
 //点击首页实现页面刷新
 function refresh() { 

@@ -19,7 +19,6 @@
 				<div class="layui-nav-item">
 					<a href="${pageContext.request.contextPath }/repasswordFormServlet?userid=${userid}" target="userM"><i class="layui-icon layui-icon-password"></i>  修改密码</a></div>
 				<div class="layui-nav-item">
-<%-- 				<a href="${pageContext.request.contextPath }/returnHomeServlet"><i class="layui-icon layui-icon-home"></i> 返回首页</a></div>  --%>
 					<a href="javascript:;" onclick="homePage(${userid})"><i class="layui-icon layui-icon-home"></i> 返回首页</a></div>
 			</div>
 		<div class="layui-body">

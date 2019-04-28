@@ -41,24 +41,23 @@ public class LoginServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");   //设置对客户端请求进行重新编码的编码
 		response.setContentType("text/html; charset=UTF-8"); //指定对服务器响应进行重新编码的编码
 		
-		// 获取表单数据
+		// 1.获取表单数据
 		String username = request.getParameter("username");
 		Mademd5 md = new Mademd5();//创建MD5加密对象
 		String passwordUnMD5 = request.getParameter("password");
 		String password = null;
 		if (passwordUnMD5 != null) {
 			password = md.toMd5(passwordUnMD5); //对密码进行加密
-			// 调用业务逻辑
+			// 2.调用业务逻辑
 			UserService userService = new UserServiceImpl();
 			Map<String, Object> result = userService.login(username,password);
-			// 分发转向
+			// 3.分发转向
 			if (null == result) {
 				// 跳转error页面 or 返回错误信息
 				request.getRequestDispatcher("/admin/loginErr.jsp").forward(request, response);
 			} else {
-				//3.创建Session对象保存User对象
-		        request.getSession().setAttribute("result", result);
-				//request.setAttribute("result", result);
+				//登入成功，进入主页
+		        request.setAttribute("result", result);
 				request.getRequestDispatcher("/admin/home.jsp").forward(request, response);
 			}
 		} else {

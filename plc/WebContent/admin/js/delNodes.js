@@ -1,12 +1,8 @@
  layui.use('form', function(){
 		var form = layui.form;
 		form.on('checkbox(allChoose)', function(data) {
-			//if(data.elem.checked){
 				ckAll();
 				form.render();
-			//}
-			//layer.msg(JSON.stringify(data.field));
-			//return false;
 		});
 	});
 	function ckAll(){	

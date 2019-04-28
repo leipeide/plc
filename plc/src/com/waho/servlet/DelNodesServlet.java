@@ -35,17 +35,12 @@ public class DelNodesServlet extends HttpServlet {
 		//获取表单数据
 		String deviceid = request.getParameter("deviceid");
 		String[] nodeAddr = request.getParameterValues("nodeAddr");
-		
-		//处理业务逻辑
+		//调用业务逻辑
 		if(nodeAddr != null) {
 			UserService  us = new UserServiceImpl();
-			Boolean result = us.delNodesCmd(Integer.parseInt(deviceid), nodeAddr);
+			int result = us.delNodesCmd(Integer.parseInt(deviceid), nodeAddr);
 			//分发转向
-			if(result) {
-				response.getWriter().write("删除成功");
-			}else {
-				response.getWriter().write("删除失败!");
-			}
+			response.getWriter().write("成功删除"+result+"个节点！");
 		}else {
 			response.getWriter().write("删除失败，请选择节点！");
 		}

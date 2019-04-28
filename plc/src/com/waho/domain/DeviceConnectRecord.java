@@ -28,6 +28,10 @@ public class DeviceConnectRecord {
 	 */
 	private boolean connection;
 	
+	public DeviceConnectRecord() {
+		super();
+	}
+	
 	public DeviceConnectRecord(String deviceMac, Date date, boolean connection) {
 		super();
 		this.deviceMac = deviceMac;

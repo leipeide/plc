@@ -23,8 +23,9 @@
 			<ul class="layui-nav layui-layout-left">
 				<li class="layui-nav-item"><a
 					href="javascript:;" onclick="refresh()">首页</a></li>
-				<li class="layui-nav-item"><a                                       
-					href="${pageContext.request.contextPath}/warnningMessageServlet?userid=${result.user.id}" target="fname">报警<span class="layui-badge" id="warnning"></span></a></li>
+				<li class="layui-nav-item">
+<%-- 				<a href="${pageContext.request.contextPath}/warnningMessageServlet?userid=${result.user.id}" target="fname">报警<span class="layui-badge" id="warnning"></span></a></li> --%>
+				<a href="javascript:;" onclick="warnningOnclick('${pageContext.request.contextPath}/warnningMessageServlet',userid=${result.user.id})">报警<span class="layui-badge" id="warnning"></span></a></li>
 			</ul>
 			<ul class="layui-nav layui-layout-right">
 				<li class="layui-nav-item"><a href="javascript:;"> <img
@@ -82,7 +83,7 @@
 	</div>
 	
 <script>
- 	//A.创建XMLHttpRequest对象
+ 	//A.创建XMLHttpRequest对象,获取“报警”栏信息数量提示
  	function getXMLHttpRequest() {
  		var xmlhttp;
  		if (window.XMLHttpRequest) {
@@ -102,7 +103,8 @@
  		req.onreadystatechange = function() {
  			if (req.readyState == 4) {// 请求成功
  				if (req.status == 200) {// 服务器响应成功,动态获取报警信息表格
- 						var warnningNum = JSON.parse(req.responseText);
+ 						var alarmMap = JSON.parse(req.responseText);
+ 						var warnningNum = alarmMap.warnningNum;
  						document.getElementById("warnning").innerHTML = warnningNum;
  				}
  			}

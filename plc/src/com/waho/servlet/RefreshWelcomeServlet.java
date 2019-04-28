@@ -43,7 +43,6 @@ public class RefreshWelcomeServlet extends HttpServlet {
 		UserService userService = new UserServiceImpl();
 		Map<String, Object> result = userService.login(username, password);
 		response.getWriter().write(JSON.toJSONString(result));
-		//System.out.println("23"+JSON.toJSONString(result));	
 		
 	}
 

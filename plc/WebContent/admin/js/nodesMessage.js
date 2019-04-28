@@ -20,8 +20,25 @@ function AJAXRequest(value, url) {
 			if (req.status == 200) {// 服务器响应成功
 				// 返回ajax请求数据req.responseText，数据用json封装
 				var json = JSON.parse(req.responseText);
-				// 调用chartsFun1函数，生成图表图
-				chartsFun1(json);
+				//当查询到有记录时，调用chartsFun1函数，生成图表图，当该时间范围内无数据时，页面提示"该时间范围内无数据统计!"
+				if (json != null) {
+					var powerRecord = json.powerRecord;
+					var timeRecord = json.timeRecord;
+					chartsFun1(powerRecord, timeRecord);
+				} else {
+					layui.use('layer', function() {
+						var layer = layui.layer;
+						layer.msg('该时间范围内无数据统计!', {
+							 // time: 2000 //2秒关闭（如果不配置，默认是3秒）
+							}, function(){
+								document.getElementById("calendar").value= "";
+								document.getElementById("powerChart").innerHTML = "";
+								document.getElementById("workTimeChart").innerHTML = "";
+							});  
+					});
+				}
+				
+		
 			}
 		}
 	}
@@ -32,10 +49,15 @@ function AJAXRequest(value, url) {
 	// POST方式发送数据
 	req.send("Date=" + value);
 }
-	
-function chartsFun1(json){
-	//1.获取json数据，为chart1填充数据
-	var powerRecord = json.powerRecord;
+
+/**
+ * 图表显示
+ * @param powerRecord
+ * @param timeRecord
+ * @returns
+ */
+function chartsFun1(powerRecord,timeRecord){
+	//1.为chart1填充数据
 	var record ;
 	var power = [];
 	var time = [];
@@ -46,9 +68,8 @@ function chartsFun1(json){
 		dateTime = msTime.toLocaleString();
 		time.push(dateTime);
 		}
-	//2.获取json数据，为chart2填充数据
-	var timeRecord = json.timeRecord;
-	//var nd = 1000 * 24 * 60 * 60;
+	//2.为chart2填充数据
+	var  nowDate = new Date();
     var nh = 1000 * 60 * 60;
     var startTime;
     var endTime;
@@ -59,21 +80,17 @@ function chartsFun1(json){
 	for(var j = 0; j < timeRecord.length; j++) {
 		if(j%2 == 0) {
 			startTime = parseInt(timeRecord[j]);
-			endTime = parseInt(timeRecord[j+1]);
-			//alert("开始毫秒值"+startTime);
-			//alert("结束毫秒值"+endTime);
+			var msStartTime = new Date(startTime);
+			if(timeRecord[j+1] != null){
+				endTime = parseInt(timeRecord[j+1]);
+			}else{
+				endTime = nowDate.getTime();
+			}
 			var msEndTime = new Date(endTime);//毫秒数转换成时间
 			var msStartTime = new Date(startTime);
-			//alert("开始时间"+msStartTime);
-			//alert("结束"+msEndTime);
 			sTime = msStartTime.toLocaleString();//将时间转成字符串
-			//eTime = msEndTime.toLocaleString();
-			//alert(sTime);
-			//alert(eTime);
 			diff = msEndTime.getTime() - msStartTime.getTime();
-			//diff = endTime - startTime;
-			//alert("diff1:"+diff);
-			hour = diff/nh/24;
+			hour = diff/nh;
 			yWorkTime.push(hour);
 			xStartTime.push(sTime);
 		}	
@@ -142,11 +159,11 @@ function chartsFun1(json){
 		yAxis: {
 			//tickPixelInterval:10,
 			title: {
-				text: '时长 / 天'
+				text: '时长 /h'
 			},
 		}, 
 		series: [{
-			name: '工作时间/天',
+			name: '工作时间/h',
 			data:yWorkTime,
 		}]
 	});
@@ -154,5 +171,10 @@ function chartsFun1(json){
 	
 }
  
- 
- 
+ /**
+  * 返回按钮，返回节点页面
+  */
+function returnBtn(nodeAddr){
+	alert("nihao");
+	location.href="${pageContext.request.contextPath }/returnNodesServlet";
+}

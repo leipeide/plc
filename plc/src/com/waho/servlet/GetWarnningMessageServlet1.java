@@ -39,8 +39,8 @@ public class GetWarnningMessageServlet1 extends HttpServlet {
 		//2.调用业务逻辑
 		if(userid != null) {
 			UserService us = new UserServiceImpl();
-			int num = us.getWmNumById(Integer.parseInt(userid));
-			response.getWriter().write(JSON.toJSONString(num));
+			Map<String, Object> alarmMap = us.getWarnningMessageAndNumById(Integer.parseInt(userid));
+			response.getWriter().write(JSON.toJSONString(alarmMap));
 		}else {
 			response.getWriter().write("未获取用户id，请重新操作");
 		}

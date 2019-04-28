@@ -1,11 +1,4 @@
-layui.use('form', function(){
-	var form = layui.form;
-	form.on('checkbox(allChoose)', function(data) {
-			ckAll();
-			form.render();
-	});
-});
-function ckAll(){	
+/*function ckAll(){	
 	//1.获取checkbox的元素对象
 	var chElt=document.getElementById("checkAll");
 	//2.获取选中状态
@@ -24,4 +17,4 @@ function ckAll(){
 			allCheck[i].checked=false;
 		}
 	}
-}
+}*/

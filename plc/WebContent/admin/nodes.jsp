@@ -11,27 +11,48 @@
 	src="${pageContext.request.contextPath }/layui/layui.js"></script>
 <title>Insert title here</title>
 <style>
-   .nav div{float:left;} 
-  .pagination { width: 100%; position: relative; bottom: 0px;}
-  .div-serach{width:135px; height:50px} 
-  .div-submit{width:50px; height:50px} 
-</style> 
+.nav div {
+	float: left;
+}
+
+.pagination {
+	width: 100%;
+	position: relative;
+	bottom: 0px;
+}
+
+.div-serach {
+	width: 135px;
+	height: 50px
+}
+
+.div-submit {
+	width: 50px;
+	height: 50px
+}
+</style>
 </head>
 <body>
-	<form id="nodeform" class="layui-form" action="${pageContext.request.contextPath }/nodeSerachServlet?deviceid=${deviceid}" method="post">
-	<div class="nav">   
- 		<div class="layui-btn-container">
-  			<button id="addBt" class="layui-btn layui-btn-sm" lay-submit lay-filter="addBt">增加节点</button>
-        	<button id="delBt" class="layui-btn layui-btn-sm" lay-submit lay-filter="delBt">删除节点</button>
-   		</div>
-    		<div class="div-serach"> 
-         	<input type="text" name="serach"  placeholder="请输入节点地址" style="width:130px; height:30px" class="layui-input" >
-         </div> 
-         <div class="div-submit">
-          	<input type="submit" name="submit" value="搜索"  style="width:35px; height:28px">
-         </div>
-     </div> 
-       
+	<form id="nodeform" class="layui-form"
+		action="${pageContext.request.contextPath }/nodeSerachServlet?deviceid=${deviceid}"
+		method="post">
+		<div class="nav">
+			<div class="layui-btn-container">
+				<button id="addBt" class="layui-btn layui-btn-sm" lay-submit
+					lay-filter="addBt">增加节点</button>
+				<button id="delBt" class="layui-btn layui-btn-sm" lay-submit
+					lay-filter="delBt">删除节点</button>
+			</div>
+			<div class="div-serach">
+				<input type="text" name="serach" placeholder="请输入节点地址"
+					style="width: 130px; height: 30px" class="layui-input">
+			</div>
+			<div class="div-submit">
+				<input type="submit" name="submit" value="搜索"
+					style="width: 35px; height: 28px">
+			</div>
+		</div>
+
 		<table class="layui-table">
 			<colgroup>
 				<col width="150">
@@ -53,7 +74,7 @@
 				</tr>
 			</thead>
 			<tbody id="table_body">
-			<!-- 
+				<!-- 
 			<c:forEach items="${pb.nodes}" var="node">
 					<tr>
 						<td>${node.nodeAddr }&nbsp;&nbsp;<a href="${pageContext.request.contextPath }/nodeMessageChartServlet?nodeAddr=${node.nodeAddr}&deviceMac=${deviceMac}" ><i class="layui-icon layui-icon-chart"></i></a>
@@ -71,7 +92,7 @@
 							onclick="nodeRefresh('${pageContext.request.contextPath }/nodeRefreshServlet?nodeid=${node.id }')">刷新</a></td>
 					</tr>
 				</c:forEach>
-				 --> 
+				 -->
 			</tbody>
 		</table>
 	</form>
@@ -136,11 +157,10 @@
 	function AJAXRequest() {
 		var req = getXMLHttpRequest();
 		req.onreadystatechange = function() {
-			if (req.readyState == 4) {// 请求成功
+			if (req.readyState == 4) {//请求成功
 				if (req.status == 200) {// 服务器响应成功
-					var pbs = JSON.parse(req.responseText);
+					var pbs = JSON.parse(req.responseText);//pbs与当前界面的pb是两个不同的变量，两者名称不可一致
 					var nodes = pbs.nodes;
-					//alert(req.responseText);
 					var inner = "";
 					var node;
 					for (var i = 0; i < nodes.length; i++) {
@@ -186,6 +206,6 @@
 		AJAXRequest();
 	}
 	setInterval(AJAXRequest,1000*3);
-	</script> 
+	</script>
 </body>
 </html>

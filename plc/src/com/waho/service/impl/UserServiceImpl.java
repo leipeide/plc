@@ -3,12 +3,15 @@ package com.waho.service.impl;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
 import com.waho.dao.AlarmDao;
 import com.waho.dao.DeviceDao;
 import com.waho.dao.NodeDao;
@@ -73,12 +76,11 @@ public class UserServiceImpl implements UserService {
 	public PageBean getNodesPageByDeviceid(int deviceid,int currentPage,int pageSize) {
 		NodeDao nodeDao = new NodeDaoImpl();
 		List<Node> list = null;
+		PageBean pb = new PageBean();
 		try {
 			list = nodeDao.selectNodesByDeviceid(deviceid);  
 			int count = list.size();
-			
 			//把5个变量封装到PageBean中，做为返回值
-			PageBean pb = new PageBean();
 			pb.setCount(count);
 			pb.setCurrentPage(currentPage);
 			pb.setPageSize(pageSize);
@@ -89,14 +91,39 @@ public class UserServiceImpl implements UserService {
 				pb.setNodes(list.subList(pb.getStar(), 
 						count-pb.getStar()>pb.getPageSize()?pb.getStar()+pb.getPageSize():count));
 			}
-			return pb;
 				
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return pb;
 	}
 	
+	
+	@Override
+	public PageBean refreshNodesPageByDeviceid(int deviceid, int currentPage, int pageSize) {
+		NodeDao nodeDao = new NodeDaoImpl();
+		List<Node> list = null;
+		PageBean pb = new PageBean();
+		try {
+			list = nodeDao.selectNodesByDeviceid(deviceid);  
+			int count = list.size();
+			//把5个变量封装到PageBean中，做为返回值
+			pb.setCount(count);
+			pb.setCurrentPage(currentPage);
+			pb.setPageSize(pageSize);
+			pb.setTotalPage((int)Math.ceil(count*1.0/pb.getPageSize()));
+			pb.setStar((pb.getCurrentPage() - 1) * pb.getPageSize());
+			//将节点分页显示
+			if(pb.getTotalPage()!=0) {
+				pb.setNodes(list.subList(pb.getStar(), 
+						count-pb.getStar()>pb.getPageSize()?pb.getStar()+pb.getPageSize():count));
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return pb;
+	}
+
 	@Override
 	public void userWriteNodeCmd(int nodeid, String light1State, String light2State, String light1PowerPercent,
 			String light2PowerPercent) {
@@ -335,54 +362,31 @@ public class UserServiceImpl implements UserService {
 	 }
 
 	@Override
-	public boolean delNodesCmd(int deviceid, String[] nodeAddr) {
-		UserMessage um = new UserMessage();
+	public int delNodesCmd(int deviceid, String[] nodeAddr) {
 		DeviceDao deviceDao = new DeviceDaoImpl();
 		NodeDao nodeDao = new NodeDaoImpl();
 		Node  node = new Node();
-		int num = nodeAddr.length;
 		int sum = 0;
-		Boolean result = false;
-		
-		try {//将指令写入数据库
+		try {
 		    Device device = deviceDao.selectDeviceById(deviceid);
-			/*um.setUserid(device.getUserid());
-			um.setDeviceMac(device.getDeviceMac());
-			um.setCommand(SocketCommand.CMD_DELETE_NODE);
-			um.setExecuted(false);
-			um.setData(SocketCommand.GenerateDelNodesCommandDate(num, nodeAddr));
-			UserMessageDao umDao = new UserMessageDaoImpl();
-			umDao.insertUserMessage(um);*/
-			
 			//删除节点
-			for(int i=0; i<num; i++) {
+			for(int i=0; i<nodeAddr.length; i++) {
 				String nodeAddr1 = nodeAddr[i];
 				node.setNodeAddr(nodeAddr1);
 				node = nodeDao.selectNodeByNodeAddr(nodeAddr1);
 				int x = nodeDao.deletNodesByNodeAddr(node);
-				if(x == 1) {
-					sum=sum+1;
-				}
+				sum = sum + x;	
 			}
-			
 			// 更新数据库
+			//System.out.println("sum:"+sum);
 			device.setCurrentNodes(device.getCurrentNodes()-sum);
-			try {
-				deviceDao.updateDeviceCurrentNodes(device);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			if(sum == num) {
-				result = true;
-			}
+			//System.out.println("当前节点数量："+device.getCurrentNodes());
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return result;
-		
+		return sum;
 	}
 
 	@Override
@@ -527,8 +531,6 @@ public class UserServiceImpl implements UserService {
 						}
 						recordMap.put("timeRecord", timelist);
 					}
-					//注释
-					//System.out.println("时间集合大小："+timelist.size());
 		    	}
 		    	break;
 		    }		
@@ -540,26 +542,170 @@ public class UserServiceImpl implements UserService {
     	return recordMap;
 	}
 
-	@Override
+	@Override//use
 	public Map<String, Object> getWarnningMessageById(int userid) {
 		Map<String, Object> alarmMap = null;
 		AlarmDao aDao = new AlarmDaoImpl();
 		DeviceDao dDao = new DeviceDaoImpl();
  		List<Alarm> alarm;
  		List<Alarm> alarmRecord = null;
+ 		List<String>deviceMacList = null;
+ 		List<String>nodeAddrList = null;
  		int total = 0;
 			try {
 				List<Device> list = dDao.selectDeviceByUserid(userid);
 				alarmMap = new HashMap<String, Object>();
 				alarmRecord = new ArrayList<>();
+				deviceMacList = new ArrayList<>();
+				nodeAddrList = new ArrayList<>();
+				//根据集控器查询该用户下的所有报警信息，并放在一个集合中
+				for(Device device:list) {
+					alarm = aDao.selectAlarmRecordByDeviceMac(device.getDeviceMac());
+					int num = alarm.size();
+					total = total + num;
+					alarmRecord.addAll(alarm);
+					deviceMacList.add(device.getDeviceMac());
+				}
+				//冒泡法进行日期排序：较近的日期靠前
+				for(int i = 0;i < alarmRecord.size()-1;i++) {//外层循环控制排序趟数
+					for(int j = 0; j < alarmRecord.size()-1-i; j++ ) {//内层循环控制每一趟排序多少次
+						Date date1 = alarmRecord.get(j).getDate();
+						Date date2 = alarmRecord.get(j+1).getDate();
+						if(date1.before(date2)) {
+							 Collections.swap(alarmRecord, j, j + 1);
+						}
+					}
+				}
+			
+				//获取记录中节点的种类、集控器地址种类
+				for(int i = 0;i < alarmRecord.size();i++) {
+					//System.out.println("alarmRecord的大小"+alarmRecord.size());
+					//System.out.println("进入"+i);
+					String nodeAddr = alarmRecord.get(i).getNodeAddr();
+					//String deviceMac = alarmRecord.get(i).getDeviceMac();
+					//System.out.println("节点地址0"+nodeAddr);
+					if(nodeAddrList.contains(nodeAddr)) {
+						break;
+					}else {
+						nodeAddrList.add(nodeAddr);
+						//System.out.println("节点地址1"+nodeAddr);
+					}
+		/*			if(deviceMacList.contains(deviceMac)) {
+						break;
+					}else {
+						deviceMacList.add(deviceMac);
+					}*/
+				}
+				//System.out.println("alarmRecord的大小："+JSON.toJSONString(alarmRecord));
+				//System.out.println("节点长度："+nodeAddrList.size());
+				alarmMap.put("deviceMacList",deviceMacList);
+				alarmMap.put("nodeAddrList",nodeAddrList);
+				alarmMap.put("alarmList", alarmRecord);
+				alarmMap.put("warnningNum", total); 
+				
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return alarmMap;
+	}
+
+	
+	@Override
+	public Map<String, Object> delWarnningMessage(String[] alarmId,int userid) {
+		Map<String, Object> alarmMap = new HashMap<String, Object>();
+		List<String>deviceMacList = new ArrayList<>();
+ 		List<String>nodeAddrList = new ArrayList<>();
+		AlarmDao aDao = new AlarmDaoImpl();
+		DeviceDao dDao = new DeviceDaoImpl();
+		String id;
+		int num = 0;
+		try {
+			
+			for(int i = 0; i < alarmId.length; i++) {
+			    id = alarmId[i];
+				if(aDao.deleteById(Integer.parseInt(id)) == 1) {
+					num = num + 1;
+				}
+			}
+			List<Alarm> alarmRecord = aDao.selectAlarmRecordByUserid(userid);
+			List<Device> device = dDao.selectDeviceByUserid(userid);
+			int total = alarmRecord.size();
+			for(Device obj:device) {
+				deviceMacList.add(obj.getDeviceMac());
+			}
+			
+			//冒泡法进行日期排序：较近的日期靠前
+			for(int i = 0;i < alarmRecord.size()-1;i++) {//外层循环控制排序趟数
+				for(int j = 0; j < alarmRecord.size()-1-i; j++ ) {//内层循环控制每一趟排序多少次
+					Date date1 = alarmRecord.get(j).getDate();
+					Date date2 = alarmRecord.get(j+1).getDate();
+					if(date1.before(date2)) {
+						 Collections.swap(alarmRecord, j, j + 1);
+					}
+				}
+			}
+			
+			//获取记录中节点的种类、集控器地址种类
+			for(int i = 0;i < alarmRecord.size();i++) {
+				String nodeAddr = alarmRecord.get(i).getNodeAddr();
+				if(nodeAddrList.contains(nodeAddr)) {
+					break;
+				}else {
+					nodeAddrList.add(nodeAddr);
+				}
+			}
+			alarmMap.put("alarmList", alarmRecord);
+			alarmMap.put("warnningNum", total); 
+			alarmMap.put("delNum",num); 
+			alarmMap.put("deviceMacList",deviceMacList);
+			alarmMap.put("nodeAddrList",nodeAddrList);
+			 
+			
+		} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+		return alarmMap;
+	}
+
+	@Override
+	public Map<String, Object> getWarnningMessageAndNumById(int userid) {
+		Map<String, Object> alarmMap = new HashMap<String, Object>();
+		AlarmDao aDao = new AlarmDaoImpl();
+		//DeviceDao dDao = new DeviceDaoImpl();
+ 		//List<Alarm> alarm;
+ 		List<Alarm> alarmRecord = new ArrayList<>();
+			try {
+			/*	List<Device> list = dDao.selectDeviceByUserid(userid);
+				//根据集控器查询该用户下的所有报警信息，并放在一个集合中
 				for(Device device:list) {
 					alarm = aDao.selectAlarmRecordByDeviceMac(device.getDeviceMac());
 					int num = alarm.size();
 					total = total+num;
 					alarmRecord.addAll(alarm);
+				}*/
+				
+				alarmRecord = aDao.selectAlarmRecordByUserid(userid);
+				int total = alarmRecord.size();
+				//冒泡法进行日期排序：较近的日期靠前
+				for(int i = 0;i < alarmRecord.size()-1;i++) {//外层循环控制排序趟数
+					for(int j = 0; j < alarmRecord.size()-1-i; j++ ) {//内层循环控制每一趟排序多少次
+						Date date1 = alarmRecord.get(j).getDate();
+						Date date2 = alarmRecord.get(j+1).getDate();
+						if(date1.before(date2)) {
+							 Collections.swap(alarmRecord, j, j + 1);
+						}
+					}
 				}
+				
 				alarmMap.put("alarmList", alarmRecord);
 				alarmMap.put("warnningNum", total); 
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -568,53 +714,135 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Boolean delWarnningMessage(String[] alarmId) {
-		AlarmDao aDao = new AlarmDaoImpl();
-		String id;
-		int num = 0;
-		boolean result = false;
+	public PageBean returnNodesPageByReturnButton(String nodeAddr,int deviceId) {
+		NodeDao nDao = new NodeDaoImpl();
+		PageBean pb = new PageBean();
 		try {
-			for(int i = 0; i < alarmId.length; i++) {
-				id = alarmId[i];
-				if(aDao.deleteById(Integer.parseInt(id)) == 1) {
-					num = num + 1;
-				}
-				if(num == alarmId.length) {
-					result = true;
+			List<Node> list = nDao.selectNodesByDeviceid(deviceId);
+			int pageSize = 15;
+			int count = list.size();
+			int currentPage = 1;
+			/*获得currentPage的值，返回nodeAddr所在的页面
+			 * for(int i = 0; i < list.size(); i++) {
+				if(list.get(i).getNodeAddr() == nodeAddr) {
+					int num = i;
 				}
 			}
-		} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-		} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-		}
-		return result;
-	}
-
-	@Override
-	public int getWmNumById(int userid) {
-		//获取报警个数
-		DeviceDao dDao = new DeviceDaoImpl();
-		AlarmDao aDao = new AlarmDaoImpl();
-		int total = 0;
-		List<Device> devices;
-		try {
-			devices = dDao.selectDeviceByUserid(userid);
-			for(Device device:devices) {
-				List<Alarm> alarm = aDao.selectAlarmRecordByDeviceMac(device.getDeviceMac());
-				int num = alarm.size();
-				total = total+num;
-			}
+			if(num != 0) {
+				if((num % pageSize) == 0) {
+					currentPage = num / pageSize; //整除时，currentPage为商
+				}else {
+					currentPage = (num / pageSize) + 1; //有余数时，currentPage为商+1
+				}
+			}else {
+				currentPage = 1;
+			}*/
+			pb.setCount(count);
+			pb.setCurrentPage(currentPage);
+			pb.setPageSize(pageSize);
+			pb.setTotalPage((int)Math.ceil(count*1.0/pb.getPageSize()));
+			pb.setStar((pb.getCurrentPage() - 1) * pb.getPageSize());
+			//将节点分页显示
+			if(pb.getTotalPage()!=0) {
+				pb.setNodes(list.subList(pb.getStar(), 
+						count-pb.getStar()>pb.getPageSize()?pb.getStar()+pb.getPageSize():count));
+			}	
+ 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-		return total;
+		return pb;
 	}
-	
+
+	@Override
+	public Map<String, Object> serachWarnningMessageByFactor(int userid, String deviceMac, String nodeAddr, String typeStr,
+			String date) {
+		DeviceDao dDao = new DeviceDaoImpl();
+		AlarmDao aDao = new AlarmDaoImpl();
+		Map<String, Object> alarmMap = new HashMap<String, Object>();
+		//List<Alarm> alarm = new ArrayList<>();
+		List<Alarm> alarmRecord = new ArrayList<>();
+		int type = 0;
+			try {
+				if(deviceMac != null) {
+					//System.out.println("进入deviceMac");
+					alarmRecord = aDao.selectAlarmRecordByDeviceMac(deviceMac);
+					
+				}if(nodeAddr != null) {
+					//System.out.println("进入nodeAddr");
+					alarmRecord = aDao.selectAlarmRecordByNodeAddrAndUserid(nodeAddr,userid);
+					
+				}if(typeStr != null) {
+					//System.out.println("进入typeStr");
+					switch(typeStr){
+						case "节点过功率，请及时处理" :
+							type = 1;
+							break; 
+						case "集控器连接失败，请及时处理" :
+							type = 2;
+							break; 
+						default :
+							break;
+					}
+					alarmRecord = aDao.selectAlarmRecordByTypeAndUserid(type,userid);
+					
+				}if(date != null) {
+					//System.out.println("进入date");
+					alarmRecord = aDao.selectAlarmRecordByUserid(userid);
+				}	
+				//冒泡法进行日期排序：较近的日期靠前
+				if(date == null || date.equals("正序")) {
+					for (int i = 0; i < alarmRecord.size() - 1; i++) {// 外层循环控制排序趟数
+						for (int j = 0; j < alarmRecord.size() - 1 - i; j++) {// 内层循环控制每一趟排序多少次
+							Date date1 = alarmRecord.get(j).getDate();
+							Date date2 = alarmRecord.get(j + 1).getDate();
+							if (date1.before(date2)) {
+								Collections.swap(alarmRecord, j, j + 1);
+							}
+						}
+				}
+				}else {
+				//if(date.equals("倒序")) {
+					for (int i = 0; i < alarmRecord.size() - 1; i++) {// 外层循环控制排序趟数
+						for (int j = 0; j < alarmRecord.size() - 1 - i; j++) {// 内层循环控制每一趟排序多少次
+							Date date1 = alarmRecord.get(j).getDate();
+							Date date2 = alarmRecord.get(j + 1).getDate();
+							if (date2.before(date1)) {
+								Collections.swap(alarmRecord, j, j + 1);
+							}
+						}
+					}
+				}
+				List<Alarm> list = aDao.selectAlarmRecordByUserid(userid);
+				List<String> nodeAddrList = new ArrayList<>();
+				List<String> deviceMacList = new ArrayList<>();
+				List<Device> device = dDao.selectDeviceByUserid(userid);
+				for(Device obj:device) {
+					deviceMacList.add(obj.getDeviceMac());
+				}
+				for(Alarm obj:list) {
+					nodeAddr = obj.getNodeAddr();	
+					deviceMac = obj.getDeviceMac();
+					if(nodeAddrList.contains(nodeAddr)) {
+						//break;
+					}else {
+						nodeAddrList.add(nodeAddr);
+					}
+				}
+				alarmMap.put("deviceMacList",deviceMacList);
+				alarmMap.put("nodeAddrList",nodeAddrList);
+				alarmMap.put("alarmList", alarmRecord);
+				//alarmMap.put("warnningNum", list.size()); 
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return alarmMap;
+		
+	}
 	
 	
 }

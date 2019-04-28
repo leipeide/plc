@@ -43,19 +43,26 @@ public class Alarm {
 	 * 报警信息类型
 	 */
 	private int type;
+	
+	/**
+	 * 报警信息类型
+	 */
+	private int userid;
 
 	public Alarm() {
 		super();
 	}
 	
-	public Alarm(Date date, String deviceMac, String nodeAddr, int type) {
+	public Alarm(Date date, String deviceMac, String nodeAddr, int type,int userid) {
 		super();
 		this.setDate(date);
 		this.setDeviceMac(deviceMac);
 		this.setNodeAddr(nodeAddr);
 		this.setType(type);
+		this.setUserid(userid);
 	}
 
+	
 	public int getId() {
 		return id;
 	}
@@ -95,10 +102,18 @@ public class Alarm {
 	public void setType(int type) {
 		this.type = type;
 	}
+	
+	public int getUserid() {
+		return userid;
+	}
+
+	public void setUserid(int userid) {
+		this.userid = userid;
+	}
 
 	@Override
 	public String toString() {
-		return "Alarm [id=" + id + ", time=" + date + ", deviceMac=" + deviceMac + ", nodeAddr=" + nodeAddr + ", type="
+		return "Alarm [id=" + id + ", userid=" + userid + ", time=" + date + ", deviceMac=" + deviceMac + ", nodeAddr=" + nodeAddr + ", type="
 				+ type + "]";
 	}
 	

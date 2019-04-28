@@ -38,19 +38,22 @@ public class GetNodesServlet extends HttpServlet {
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html;charset=UTF-8");
-
+		
 		// 获取表单数据
 		String deviceidString = request.getParameter("deviceid");
-		String currPage = request.getParameter("currentPage"); //从上一页或下一页得到的数据
+		String currPage = request.getParameter("currentPage"); 
+		//1.每页显示数据的个数
 		int pageSize = 15;
-		int currentPage = 1; //当前页面
-		if(currPage != null) { // 第一次访问时currPage可能为空
+		//2.currentPage为当前页面，初次访问节点页面上时currentPage初始化设置为1
+		int currentPage = 1;
+		//3.非初次访问节点页面，从上一页或下一页按钮得到的数据currPage
+		if(currPage != null) {
 			currentPage = Integer.parseInt(currPage);
 		}
 		
+		// 调用业务逻辑
 		if (deviceidString != null) {
 			int deviceid = Integer.parseInt(deviceidString);
-			// 调用业务逻辑
 			UserService userService = new UserServiceImpl();
 			PageBean pb = userService.getNodesPageByDeviceid(deviceid,currentPage,pageSize);
 			// 分发转向

@@ -19,7 +19,12 @@
 	border: 1px;
 	solid: #FFF
 }
-
+.div-backBtn{
+	width: 30px;
+	height: 50px;
+	float: left;
+	border: 1px;
+}
 .div-select {
 	width: 400px;
 	height: 50px;
@@ -37,7 +42,6 @@
 	width: 800px;
 	height: 420px;
 	position: relative;
-/* 	top:10px; */
 	margin:40px;
 }
 </style>
@@ -52,8 +56,12 @@
 					class="layui-input" id="calendar" type="text" name="calendar"
 					placeholder=" 请选择范围 " style="width: 250px;">
 			</div>
-		</div>
-		</br>
+			<div class="div-backBtn">
+	 			<button id="backBtn" class="layui-btn">
+	 				<a href=${pageContext.request.contextPath }/returnNodesServlet?nodeAddr=${nodeAddr}>返回</a>
+	 			</button>
+			</div>
+		</div></br>
 		<div>
 			<div class="div-power" id="powerChart"></div>
 			<div class="div-time" id="workTimeChart"></div>

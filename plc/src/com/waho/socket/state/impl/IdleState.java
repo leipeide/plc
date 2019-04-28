@@ -9,17 +9,13 @@ import org.apache.log4j.Logger;
 
 import com.waho.dao.AlarmDao;
 import com.waho.dao.DeviceConnectRecordDao;
-import com.waho.dao.DeviceDao;
 import com.waho.dao.NodeDao;
 import com.waho.dao.RecordDao;
-import com.waho.dao.UserDao;
 import com.waho.dao.UserMessageDao;
 import com.waho.dao.impl.AlarmDaoImpl;
 import com.waho.dao.impl.DeviceConnectRecordDaoImpl;
-import com.waho.dao.impl.DeviceDaoImpl;
 import com.waho.dao.impl.NodeDaoImpl;
 import com.waho.dao.impl.RecordDaoImpl;
-import com.waho.dao.impl.UserDaoImpl;
 import com.waho.dao.impl.UserMessageDaoImpl;
 import com.waho.domain.Alarm;
 import com.waho.domain.Device;
@@ -167,13 +163,14 @@ public class IdleState implements SocketState {
 											alarmDao.deleteById(alarm.getId());
 										}
 										// 2.2 未超过12个小时，判断是否过功率，如果过功率，生成报警信息，type = ALARM_OVER_POWER，存入数据库。
-										if (record.getLight1Power() > Alarm.LIGHT1_OVERLOAD_VOLTAGE
-												|| record.getLight2Power() > Alarm.LIGHT2_OVERLOAD_VOLTAGE
-												|| record.getPower() > Alarm.TOTAL_OVERLOAD_VOLTAGE) {
-											alarm = new Alarm(new Date(), node.getDeviceMac(), node.getNodeAddr(),Alarm.ALARM_OVERLOAD,um.getUserid()); //Alarm.ALARM_OVERLOAD
-											alarmDao.insert(alarm);
-										
-										}
+										// 删除，放到CmdWriteNodeStateHandler 和 CmdReadNodeStateHandler进行过功率判断。
+//										if (record.getLight1Power() > Alarm.LIGHT1_OVERLOAD_VOLTAGE
+//												|| record.getLight2Power() > Alarm.LIGHT2_OVERLOAD_VOLTAGE
+//												|| record.getPower() > Alarm.TOTAL_OVERLOAD_VOLTAGE) {
+//											alarm = new Alarm(new Date(), node.getDeviceMac(), node.getNodeAddr(),Alarm.ALARM_OVERLOAD,um.getUserid()); //Alarm.ALARM_OVERLOAD
+//											alarmDao.insert(alarm);
+//										
+//										}
 									}
 								} else {
 									// 未查询到节点功率记录,如果集控器链接已超过12个小时，报警

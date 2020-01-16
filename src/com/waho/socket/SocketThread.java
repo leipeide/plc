@@ -1,4 +1,4 @@
-package com.waho.socket;
+﻿package com.waho.socket;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,8 +16,10 @@ public class SocketThread extends Thread {
 	public SocketThread(ServerSocket serverScoket) {
 		try {
 			if (null == serverSocket) {
-				//this.serverSocket = new ServerSocket(7002);//客户端服务器端口号
-				this.serverSocket = new ServerSocket(7005);//本地服务器端口号
+
+				this.serverSocket = new ServerSocket(7002);//客户端服务器端口号
+				//this.serverSocket = new ServerSocket(7005);//本地服务器端口号
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

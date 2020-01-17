@@ -118,7 +118,7 @@ public class IdleState implements SocketState {
 						calendar.set(Calendar.SECOND,t.getSeconds());    // 控制秒
 						Date time = calendar.getTime();//获取日历时间
 						Date nowDate = new Date();//获取本地时间
-						int month = nowDate.getMonth();//获取当前时间的月份部分
+						int month = nowDate.getMonth()+1;//获取当前时间的月份部分(月份范围0-11)
 						
 						//2.每天清除标志位，设置为未执行状态flase
 						Calendar calendar1 = Calendar.getInstance();
@@ -134,7 +134,6 @@ public class IdleState implements SocketState {
 						if(flag == false) {
 							if(month >= startMonth && month <= endMonth) {
 								if((nowDate.getTime() - time.getTime()) >= 0 && (nowDate.getTime() - time.getTime() <= 1000*60)) {
-									//System.out.println("到达定时时间，发送广播指令");
 									//1.将用户指令写入用户信息数据库
 									UserMessage um = new UserMessage();
 									um.setUserid(obj.getUserid());

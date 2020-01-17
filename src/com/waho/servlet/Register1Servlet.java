@@ -49,8 +49,8 @@ public class Register1Servlet extends HttpServlet {
 			request.getRequestDispatcher("/admin/register.jsp").forward(request, response);
 			return;
 		}else if(us.registUser(username, password, email)) {
-			//response.setHeader("refresh","3;/plc");//客户端
-			response.setHeader("refresh","3;/plc1");//本地测试
+			response.setHeader("refresh","3;/plc");//客户端
+			//response.setHeader("refresh","3;/plc1");//本地测试
 			response.getWriter().write("注册成功，3秒后跳转到登录页面！");
 		}else {
 			request.setAttribute("RegistFailed", "注册失败，请重新注册！");

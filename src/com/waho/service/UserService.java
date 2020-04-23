@@ -107,9 +107,10 @@ public interface UserService {
 	 * @param username
 	 * @param password
 	 * @param email
+	 * @param phone 
 	 * @return
 	 */
-	public boolean registUser(String username,String password,String email);
+	public boolean registUser(String username,String password,String email, String phone);
 	/**
 	 * 向用户中的集控器中添加新的节点
 	 * @param deviceid
@@ -277,6 +278,25 @@ public interface UserService {
 	 * @return
 	 */
 	public List<TimingPlan> showDelTimingPlan(int parseInt);
+	/**
+	 * 根据邮箱账号查找，存在则发送验证码去邮箱
+	 * @return
+	 */
+	public Object sendVerificationCodeToEmail(String email);
+	/**
+	 * 根据邮箱和验证码找回用户信息
+	 * @param email
+	 * @param verCode
+	 * @return
+	 */
+	public Object findPasswordByVercode(String email, String verCode);
+	/**
+	 * 用户忘记了密码，设置新的密码
+	 * @param id
+	 * @param newPassword
+	 * @return 
+	 */
+	public boolean userSetNewPassword(int id, String newPassword);
 	
 	
 	

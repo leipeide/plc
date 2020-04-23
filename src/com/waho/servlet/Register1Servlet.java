@@ -38,6 +38,7 @@ public class Register1Servlet extends HttpServlet {
 		String passwordrep =md.toMd5(request.getParameter("passwordrep"));
 		String username = request.getParameter("username");
 		String email = request.getParameter("email");
+		String phone = request.getParameter("phone");
 		//2.处理业务逻辑
 		UserService us = new UserServiceImpl();
 		if(us.checkUserByUsername(username)) {
@@ -48,7 +49,7 @@ public class Register1Servlet extends HttpServlet {
 			request.setAttribute("RegistFailed", "两次密码不一致！");
 			request.getRequestDispatcher("/admin/register.jsp").forward(request, response);
 			return;
-		}else if(us.registUser(username, password, email)) {
+		}else if(us.registUser(username, password, email, phone)) {
 			response.setHeader("refresh","3;/plc");//客户端
 			//response.setHeader("refresh","3;/plc1");//本地测试
 			response.getWriter().write("注册成功，3秒后跳转到登录页面！");

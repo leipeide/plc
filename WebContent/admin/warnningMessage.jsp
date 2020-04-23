@@ -26,67 +26,72 @@
 }
 .label1{
 	float: left;
-	width: 80px;
+/* 	width: 80px; */
+ 	width: 40%; 
 	height: 28px;
 	padding-top: 8px;
-/*  	border:3px solid  #000   */
+/*   	border:3px solid  #000     */
 }
 .label2{
 	float: left;
-	width: 60px;
+/* 	width: 60px; */
+ 	width: 40%; 
 	height: 28px;
-	margin-left: 10px; 
+	margin-left: 0px; 
 	padding-top: 8px;
-/* 	border:3px solid  #000  */
+/*  	border:3px solid  #000   */
 }
 .label{
 	float: left;
-	width: 40px;
+/* 	width: 40px; */
+ 	width: 25%; 
 	height: 28px;
 	margin-left: 10px;
 	padding-top: 8px;
-/* 	border:3px solid  #000  */
+/*  	border:3px solid  #000   */
 }
 
 .deviceMac {
 	float: left;
-	width: 190px;
-/* 	height: 40px; */
+/* 	width: 190px; */
+ 	width: 18%; 
 	margin-left: 30px;
-/*    	border:3px solid  #000    */
+/*      	border:3px solid  #000      */
 }
 .layui-input-block{
 	float: left;
-	width: 105px;
-/* 	height: 40px; */
+/*    	width: 40%;    */
+/*   	width: 105px;   */
+	width: 50%; 
 	margin-left: 0px;
-/*   	border:3px solid  #000   */
+/*     border:3px solid  #000      */
 }
 .nodeAddr {
 	float: left;
-	width: 180px;
-/* 	height: 40px; */
+ 	width: 17%; 
+/* 	width: 180px; */
 	padding-left: 0px;
 	margin-left: 0px;
-/*   	border:3px solid #000;    */
+/*     	border:3px solid #000;      */
 }
 
 .type {
 	float: left;
-	width: 160px;
-/* 	height: 40px; */
+/* 	width: 160px; */
+ 	width: 15%; 
 	padding-left: 0px;
 	margin-left: 0px;
-/*   	border:3px solid  #000;   */
+/*    	border:3px solid  #000;     */
 }
 
 .date {
 	float: left;
-	width: 160px;
+/* 	width: 160px; */
+ 	width: 15%; 
 	height: 40px;
 	padding-left: 0px;
 	margin-left: 0px;
-/*   	border:3px solid  #000;    */
+/*  	border:3px solid  #000;      */
 }
 </style>
 </head>

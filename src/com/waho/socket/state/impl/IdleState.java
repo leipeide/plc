@@ -15,6 +15,7 @@ import com.waho.dao.NodeDao;
 import com.waho.dao.RecordDao;
 import com.waho.dao.TimingDao;
 import com.waho.dao.TimingPlanDao;
+import com.waho.dao.UserDao;
 import com.waho.dao.UserMessageDao;
 import com.waho.dao.impl.AlarmDaoImpl;
 import com.waho.dao.impl.DeviceConnectRecordDaoImpl;
@@ -22,6 +23,7 @@ import com.waho.dao.impl.NodeDaoImpl;
 import com.waho.dao.impl.RecordDaoImpl;
 import com.waho.dao.impl.TimingDaoImpl;
 import com.waho.dao.impl.TimingPlanDaoImpl;
+import com.waho.dao.impl.UserDaoImpl;
 import com.waho.dao.impl.UserMessageDaoImpl;
 import com.waho.domain.Alarm;
 import com.waho.domain.Device;
@@ -43,7 +45,6 @@ import com.waho.socket.util.SocketDataHandler;
  *
  */
 public class IdleState implements SocketState {
-	//private boolean flag = false;
 	//每5次间隔轮询一次
 	private static Integer SlowTimes = 5;
 	//超时报警判断的基准时间
@@ -118,7 +119,7 @@ public class IdleState implements SocketState {
 						calendar.set(Calendar.SECOND,t.getSeconds());    // 控制秒
 						Date time = calendar.getTime();//获取日历时间
 						Date nowDate = new Date();//获取本地时间
-						int month = nowDate.getMonth();//获取当前时间的月份部分
+						int month = nowDate.getMonth()+1;//获取当前时间的月份部分(月份范围0-11)
 						
 						//2.每天清除标志位，设置为未执行状态flase
 						Calendar calendar1 = Calendar.getInstance();
@@ -126,15 +127,16 @@ public class IdleState implements SocketState {
 						calendar1.set(Calendar.MINUTE,0);    // 控制分
 						calendar1.set(Calendar.SECOND,0);    // 控制秒
 						Date Calendar1time = calendar1.getTime();//获取日历时间
-						if((nowDate.getTime() -  Calendar1time.getTime()) >= 0 && (nowDate.getTime() -  Calendar1time.getTime() <= 1000*60)) {
+						if((nowDate.getTime() -  Calendar1time.getTime()) >= 0 
+								&& (nowDate.getTime() -  Calendar1time.getTime() <= 1000*60)) {
 							timingObj.setFlag(false);
 							td.updateTimingFlagByTimingId(timingObj);
 						}
+						
 						//3.执行未执行的定时广播
 						if(flag == false) {
 							if(month >= startMonth && month <= endMonth) {
 								if((nowDate.getTime() - time.getTime()) >= 0 && (nowDate.getTime() - time.getTime() <= 1000*60)) {
-									//System.out.println("到达定时时间，发送广播指令");
 									//1.将用户指令写入用户信息数据库
 									UserMessage um = new UserMessage();
 									um.setUserid(obj.getUserid());
@@ -178,18 +180,18 @@ public class IdleState implements SocketState {
 				
 				// 4、如果是广播控制指令，立马进行一次轮询，即轮询时间计时置为0
 				if (um.getCommand() == UserMessage.CMD_BROADCAST_WRITE_STATE) {
-					pollCount = 0;
+					pollCount = 0;  //轮询时间
 				}
 				slowCount = 0;
-			} else if (++slowCount >= SlowTimes) { // 未有指令执行，进行轮询操作（）
+			} else if (++slowCount >= SlowTimes) { // 未有指令执行，进行轮询操作（） showTimes:每5次间隔轮询一次
 				slowCount = 0;// 延时操作，函数三次调用只执行一次
 				nodeList = nodeDao.selectNodesByDeviceid(device.getId());
 				if (nodeList != null) {
 					if (pollSizeMemory != nodeList.size()) {
-						pollCount = 0;
-						pollSizeMemory = nodeList.size();
+						pollCount = 0; //
+						pollSizeMemory = nodeList.size(); //
 					}
-					if (pollCount < pollSizeMemory) {
+					if (pollCount < pollSizeMemory) { 
 						if (pollCount >= 0) {
 							Node node = nodeList.get(pollCount);
 							if (node != null) {
@@ -264,17 +266,16 @@ public class IdleState implements SocketState {
 												alarmDao.insert(alarm);
 											}
 										}
-									}
-									
-									
-									
-									
+									}	
 								}
+								
 							}
 						}
 					}
 				}
 			}
+			
+			
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

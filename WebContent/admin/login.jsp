@@ -23,10 +23,31 @@ html {
 	margin-top: 100px;
 }
 .main-form-body {
-	padding-top: 40px;
-	padding-left: 10%;
+	padding-top: 18%;
+	padding-left: 24%;
 	padding-right: 10%;
 	padding-bottom: 40px;
+/* 	border:1px solid #000; */
+}
+
+.usernameInput{ 
+	background: url('<%=request.getContextPath()%>/admin/picture/蓝色用户.png')no-repeat;
+	background-size: 25px 25px;
+ 	background-position: 5px 4px; 
+ 	background-color: #ffffff;
+ 	padding:8px 10px 8px 40px; 
+	width:210px;
+	height:20px;
+}
+
+.passwordInput{ 
+	background: url('<%=request.getContextPath()%>/admin/picture/蓝色密码.png')no-repeat;
+	background-size: 25px 25px;
+ 	background-position: 5px 4px; 
+ 	background-color: #ffffff;
+ 	padding:8px 10px 8px 40px; 
+	width:210px;
+	height:20px;
 }
 </style>
 </head>
@@ -42,28 +63,26 @@ html {
 						action="${pageContext.request.contextPath }/loginServlet"
 						method="post">
 						<div class="layui-form-item">
-							<label class="layui-form-label">用户名</label>
 							<div class="layui-input-inline">
-								<input type="text" name="username" value="" required
-									lay-verify="required" placeholder="请输入用户名" autocomplete="off"
-									class="layui-input">
+								<input type="text" name="username" placeholder="用户名" 
+									required lay-verify="required" autocomplete="off"
+									class="usernameInput">
 							</div>
 						</div>
 						<div class="layui-form-item">
-							<label class="layui-form-label">密码</label>
 							<div class="layui-input-inline">
-								<input type="password" name="password" value="" required
-									lay-verify="required" placeholder="请输入密码" autocomplete="off"
-									class="layui-input">
+								<input type="password" name="password" placeholder="密码"
+									required lay-verify="required" autocomplete="off"
+									class="passwordInput">
 							</div>
 						</div>
 						<div class="layui-form-item">
-							<div class="layui-input-block">
-								<button class="layui-btn layui-btn-primary" lay-submit
-									lay-filter="loginFilter">登录</button>
-<%-- 								<font color="red">${cklog}</font> --%>
-								<a class="layui-btn layui-btn-primary" style="margin-left:50px;"
+							<button style="width:263px;margin-left:0px;" class="layui-btn">登录</button>
+							<div style="margin-top:20px;"> 
+								<a style="float:left;margin-left:30px;color:red"
 									href="${pageContext.request.contextPath }/registerServlet">注册</a>
+								<a style="float:left;margin-left:130px;color:red"
+									href="javascript:;" onclick="goToFindPasswordPage()">忘记密码？</a>
 							</div>
 						</div>
 					</form>
@@ -80,6 +99,12 @@ html {
 			var form = layui.form;
 			var element = layui.element;
 		});
+		
+		//进入找回密码页面
+		function goToFindPasswordPage(){
+			location.href = "${pageContext.request.contextPath }/admin/findPasswordForm.jsp";
+			
+		}
 	</script>
 </body>
 </html>

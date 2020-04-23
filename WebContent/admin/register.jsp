@@ -26,11 +26,58 @@ html {
 }
 
 .main-form-body {
-	margin-left:10%;
-	padding-top: 40px;
-	padding-left: 3%;
+	padding-top: 5%;
+	padding-left: 24%;
 	padding-right: 3%;
 	padding-bottom: 40px;
+	
+}
+.usernameInput{ 
+	background: url('<%=request.getContextPath()%>/admin/picture/蓝色用户.png')no-repeat;
+	background-size: 25px 25px;
+ 	background-position: 5px 4px; 
+ 	background-color: #ffffff;
+ 	padding:8px 10px 8px 40px; 
+	width:210px;
+	height:20px;
+}
+
+.passwordInput{ 
+	background: url('<%=request.getContextPath()%>/admin/picture/蓝色密码.png')no-repeat;
+	background-size: 25px 25px;
+ 	background-position: 5px 4px; 
+ 	background-color: #ffffff;
+ 	padding:8px 10px 8px 40px; 
+	width:210px;
+	height:20px;
+}
+.repasswordInput{ 
+	background: url('<%=request.getContextPath()%>/admin/picture/蓝色密码.png')no-repeat;
+	background-size: 25px 25px;
+ 	background-position: 5px 4px; 
+ 	background-color: #ffffff;
+ 	padding:8px 10px 8px 40px; 
+	width:210px;
+	height:20px;
+}
+
+.emailInput{ 
+	background: url('<%=request.getContextPath()%>/admin/picture/蓝色邮箱.png')no-repeat;
+	background-size: 25px 25px;
+ 	background-position: 5px 4px; 
+ 	background-color: #ffffff;
+ 	padding:8px 10px 8px 40px; 
+	width:210px;
+	height:20px;
+}
+.phoneInput{
+	background: url('<%=request.getContextPath()%>/admin/picture/蓝色手机.png')no-repeat;
+	background-size: 25px 25px;
+ 	background-position: 5px 4px; 
+ 	background-color: #ffffff;
+ 	padding:8px 10px 8px 40px; 
+	width:210px;
+	height:20px;
 }
 </style>
 </head>
@@ -45,47 +92,48 @@ html {
 					<form class="layui-form"
 						action="${pageContext.request.contextPath }/register1Servlet"
 						method="post">
-						<div class="layui-form-item" style="margin-left:111px;">
+						<div class="layui-form-item" style="margin-left:5%;">
 							<font color="red">${RegistFailed}</font>
 						</div>
 						<div class="layui-form-item">
-							<label class="layui-form-label">用户名</label>
 							<div class="layui-input-inline">
-								<input type="text" name="username" value="" required
-									lay-verify="required" placeholder="请输入用户名" autocomplete="off"
-									class="layui-input">
+								<input type="text" name="username" placeholder="用户名"
+									required lay-verify="required" autocomplete="off"
+									class="usernameInput">
 							</div>
 						</div>
 						<div class="layui-form-item">
-							<label class="layui-form-label">密码</label>
 							<div class="layui-input-inline">
-								<input type="password" name="password" value="" required
-									lay-verify="required" placeholder="请输入密码" autocomplete="off"
-									class="layui-input">
+								<input type="password" name="password" placeholder="密码"
+									required lay-verify="required" autocomplete="off"
+									class="passwordInput">
 							</div>
 						</div>
 						<div class="layui-form-item">
-							<label class="layui-form-label">确认密码</label>
 							<div class="layui-input-inline">
 								<input type="password" name="passwordrep" required
-									lay-verify="required" placeholder="请输入密码" autocomplete="off"
-									class="layui-input">
+									lay-verify="required" placeholder="确认密码" autocomplete="off"
+									class="repasswordInput">
 							</div>
 						</div>
 						<div class="layui-form-item">
-							<label class="layui-form-label">邮箱</label>
 							<div class="layui-input-inline">
 								<input type="text" name="email" required lay-verify="email"
-									placeholder="请输入邮箱地址" autocomplete="off"
-									class="layui-input">
+									placeholder="邮箱" autocomplete="off"
+									class="emailInput">
 							</div>
 						</div>
 						<div class="layui-form-item">
-							<div class="layui-input-block">
-								<button name=" regname" class="layui-btn layui-btn-primary"
-									lay-submit lay-filter="registerFilter">注册</button>
-								<font color="red">${regtext}</font>
+							<div class="layui-input-inline">
+								<input type="text" name="phone" required lay-verify="phone"
+									placeholder="手机" autocomplete="off"
+									class="phoneInput">
 							</div>
+						</div>
+						<div class="layui-form-item">
+							<button name="regname" class="layui-btn" style="width:263px;"
+								lay-submit lay-filter="registerFilter">注册</button>
+							<font color="red">${regtext}</font>
 						</div>
 						<div class="layui-form-item">
 							<div class="layui-input-block" style="text-align: right">
@@ -102,8 +150,7 @@ html {
 				桌面：4/12</div>
 		</div>
 	</div>
-	<script type="text/javascript"
-		src="${pageContext.request.contextPath }/admin/js/register.js"></script>
+<%-- 	<script type="text/javascript" src="${pageContext.request.contextPath }/admin/js/register.js"></script> --%>
 	<script>
 		layui.use('form', function() {
 			var form = layui.form;

@@ -9,8 +9,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.alibaba.fastjson.JSON;
+import com.ndktools.javamd5.Mademd5;
+import com.ndktools.javamd5.core.MD5;
 import com.waho.dao.AlarmDao;
 import com.waho.dao.DeviceDao;
 import com.waho.dao.NodeDao;
@@ -38,6 +41,7 @@ import com.waho.domain.TimingPlan;
 import com.waho.domain.User;
 import com.waho.domain.UserMessage;
 import com.waho.service.UserService;
+import com.waho.domain.SendJMail;
 
 public class UserServiceImpl implements UserService {
 
@@ -348,12 +352,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean registUser(String username,String password,String email) {
+	public boolean registUser(String username, String password, String email, String phone) {
 		UserDao userDao = new UserDaoImpl();
 		User user = new User();
 		user.setUsername(username);
 		user.setPassword(password);
 		user.setEmail(email);
+		user.setPhone(phone);
+		user.setOperateNum(0);
 		boolean result5 = false;
 		try {
 			if(userDao.insertUser(user) != 0) {
@@ -1181,5 +1187,151 @@ public class UserServiceImpl implements UserService {
 			}
 		    return timingPlanList;
 		}
+
+	@Override
+	public Object sendVerificationCodeToEmail(String email) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		String error = ""; //用于返回前端的错误字段
+		User admin = null;
+		UserDao userDao = new UserDaoImpl();
+		//实例化一个发送邮件的对象
+		SendJMail mySendMail = new SendJMail();
+		
+	    //设置随机验证码
+		String verifyCode = "";
+		Random random = new Random();
+		for(int index = 0; index < 6; index++) {
+			verifyCode+=random.nextInt(10);
+		};
+		
+		try {
+			
+			admin = userDao.selectByEmail(email);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		if(admin != null) { //用户存在 
+			if(admin.getOperateNum() == 0) {  //初次获取验证码	
+				//发送邮件
+				String emailMsg = 
+						"Dear user, you are in the process of password retrieval to obtain the verification code." + 
+					    "<br/>This verification code is " + verifyCode + ".If you do not operate yourself, please ignore it." +
+					    "<br/>（尊敬的用户，您正在进行密码找回获取验证码，此次验证码是"+verifyCode + "； 如非本人操作请忽略。）" ;
+				
+				boolean sendResult = mySendMail.SendMail(admin.getEmail(), emailMsg);
+				
+				//更新user数据库中的vercode和operate_num
+				admin.setVercode(verifyCode);
+				if(sendResult) {
+					admin.setOperateNum(admin.getOperateNum() + 1); //多次获取验证码
+				}
+				try {
+					
+					userDao.updateVerCodeAndOperateNumByPrimaryKey(admin);
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//设置用户
+				result.put("User", admin);
+				
+				
+			}else if(admin.getOperateNum() < 4 && admin.getOperateNum() > 0) { // 多次获取验证码
+				//发送邮件
+				String emailMsg = 
+					"Dear user, you are in the process of password retrieval to obtain the verification code." + 
+				    "<br/>This verification code is " + verifyCode + ".If you do not operate yourself, please ignore it." +
+				    "<br/>（尊敬的用户，您正在进行密码找回获取验证码，此次验证码是"+verifyCode + "； 如非本人操作请忽略。）" ;
+				boolean sendResult = mySendMail.SendMail(admin.getEmail(), emailMsg);
+				
+				//更新user数据库中的vercode和operate_num
+				admin.setVercode(verifyCode);
+				if(sendResult) {
+					admin.setOperateNum(admin.getOperateNum()+1); //多次获取验证码
+				}
+				try {
+		
+					userDao.updateVerCodeAndOperateNumByPrimaryKey(admin);
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//设置用户
+				result.put("User", admin);
+			
+			}else { 
+			    error = "您今天的次数已超过4次，请明天再操作";
+					
+			}
+			
+			
+		}else { //用户不存在
+		    error = "未查找到用户，该邮箱未注册用户";  //错误提示用于前端提示，不要轻易修改
+		}
+		
+		
+		result.put("error", error);
+		
+		return result;
+	    
+	}
+
+	@Override
+	public Object findPasswordByVercode(String email, String verCode) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		String error = ""; //用于返回前端的错误字段
+		User admin = null;
+		UserDao userDao = new UserDaoImpl();
+		
+		try {
+			admin = userDao.selectByEmail(email);
+			if(admin != null) {
+				if(admin.getVercode().equals(verCode)) { 
+					result.put("user",admin);
+					
+				}else {
+					error = "验证码错误"; //错误提示用于前端提示，不要轻易修改
+				}
+			
+			}else {
+				error = "未查找到用户，该邮箱未注册用户";  //错误提示用于前端提示，不要轻易修改
+				
+			}		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		result.put("error", error);
+		return result; 
+	}
+
+	@Override
+	public boolean userSetNewPassword(int id, String newPassword) {
+		UserDao userDao = new UserDaoImpl();
+		boolean result = false;
+		Mademd5 md = new Mademd5();
+		String password = md.toMd5(newPassword);
+		
+		try {
+			//设置新的密码
+			 result = userDao.updateUserPasswordById(id,password);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+	
+	
+	
 	
 }
